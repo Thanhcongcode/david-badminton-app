@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TextComponent extends StatelessWidget {
   TextComponent(
@@ -10,7 +11,10 @@ class TextComponent extends StatelessWidget {
       this.decoration = TextDecoration.none,
       this.color = Colors.black,
       this.fontStyle = FontStyle.normal,
-      this.textAlign = TextAlign.left});
+      this.textAlign = TextAlign.left,
+      this.softWrap = false,
+      this.maxLines,
+      this.overflow});
 
   bool isTitle;
   String content;
@@ -20,6 +24,9 @@ class TextComponent extends StatelessWidget {
   Color color;
   FontStyle fontStyle;
   TextAlign textAlign;
+  bool softWrap;
+  int? maxLines;
+  TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +38,16 @@ class TextComponent extends StatelessWidget {
             fontWeight: weight,
             decoration: decoration,
             color: color),
-            textAlign: textAlign,
+        textAlign: textAlign,
+        softWrap: softWrap,
+        maxLines: maxLines,
+        overflow: overflow,
       );
     } else {
       return Text(
         content,
         style: TextStyle(
-          fontSize: 25,
+          fontSize: 24.sp,
           color: color,
           fontStyle: fontStyle,
           decoration: decoration,

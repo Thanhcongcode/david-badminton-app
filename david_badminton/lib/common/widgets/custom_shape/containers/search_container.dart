@@ -6,17 +6,15 @@ class SearchContainer extends StatelessWidget {
     super.key,
     required this.searchBarWidth,
     required this.text,
-    
   });
 
   final double searchBarWidth;
   final String text;
-  
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      //height: 50.sp,
+      height: 50.h,
       width: searchBarWidth,
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(

@@ -1,3 +1,4 @@
+import 'package:david_badminton/app/modules/home/views/home_screen.dart';
 import 'package:david_badminton/app/modules/login/controllers/login_controller.dart';
 import 'package:david_badminton/navigation_menu.dart';
 import 'package:david_badminton/utils/constants/app_color.dart';
@@ -14,7 +15,7 @@ class LoginForm extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(LoginController());
     return Form(
-      //key: controller.loginFormKey,
+      key: controller.loginFormKey,
       child: Column(
         children: [
           SizedBox(
@@ -63,6 +64,7 @@ class LoginForm extends StatelessWidget {
                 onTapOutside: (event) {
                   FocusManager.instance.primaryFocus?.unfocus();
                 },
+                controller: controller.passwordController,
                 keyboardType: TextInputType.text,
                 obscureText: controller.hidePassword.value,
                 obscuringCharacter: '*',
@@ -124,7 +126,13 @@ class LoginForm extends StatelessWidget {
             height: 52.h,
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => Get.to(() => NavigationMenu()),
+              onPressed: () {
+                // if (controller.loginFormKey.currentState!.validate()) {
+                //   print('hello');
+                //   controller.login();
+                // }
+                Get.to(() => NavigationMenu());
+              },
               child: Text('Đăng nhập'),
               style: ElevatedButton.styleFrom(
                 elevation: 0,

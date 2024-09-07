@@ -14,8 +14,8 @@ class LoginHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SizedBox(
-          height: 250.h,
-          width: 200.w,
+          height: 200.h,
+          width: 150.w,
           child: Image.asset(
             'assets/logos/logo.png',
             fit: BoxFit.contain,

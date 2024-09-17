@@ -1,3 +1,4 @@
+import 'package:david_badminton/app/modules/attendance/controllers/attendance_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:david_badminton/common/widgets/custom_shape/containers/primary_header_container.dart';
@@ -7,12 +8,14 @@ import 'package:david_badminton/app/modules/home/views/widget/function/branch_ma
 import 'package:david_badminton/app/modules/home/views/widget/function/human_management.dart';
 import 'package:david_badminton/app/modules/home/views/widget/function/tuition_fee.dart';
 import 'package:david_badminton/common/widgets/texts/section_heading.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final attendanceController = Get.put(AttendanceController());
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
@@ -49,6 +52,7 @@ class HomeScreen extends StatelessWidget {
                   margin: EdgeInsets.symmetric(
                       horizontal: (width - searchBarWidth) / 2),
                   child: SearchContainer(
+                   
                     searchBarWidth: searchBarWidth,
                     text: 'Tìm kiếm...',
                   ),

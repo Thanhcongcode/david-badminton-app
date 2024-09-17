@@ -1,6 +1,9 @@
+import 'package:david_badminton/app/modules/location/views/location_view.dart';
 import 'package:david_badminton/common/widgets/function/function_button.dart';
+import 'package:david_badminton/test.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class BranchManagement extends StatelessWidget {
   const BranchManagement({
@@ -18,7 +21,9 @@ class BranchManagement extends StatelessWidget {
           FunctionButton(
             icon: 'assets/icons/branch.svg',
             label: 'Quản lý cơ sở',
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => LocationView());
+            },
           ),
           FunctionButton(
             icon: 'assets/icons/stadium.svg',

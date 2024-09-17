@@ -1,21 +1,17 @@
-import 'package:david_badminton/app/modules/student_list/controllers/student_controller.dart';
+import 'package:david_badminton/model/student.dart';
 
 class StudentData {
   int? totalCount;
   int? totalPages;
   int? currentPage;
   int? pageSize;
-  List<Student>? students;
-  String? message;
-  int? statusCode;
+  List<Student> students;
 
-  StudentData(
-    this.currentPage,
-    this.message,
-    this.pageSize,
-    this.statusCode,
-    this.students,
+  StudentData({
     this.totalCount,
     this.totalPages,
-  );
+    this.currentPage,
+    this.pageSize,
+    required this.students,
+  });
 }

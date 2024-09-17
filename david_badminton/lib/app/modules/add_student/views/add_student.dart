@@ -1,7 +1,10 @@
-import 'package:david_badminton/app/modules/add_student/controller/add_student_controller.dart';
-import 'package:david_badminton/app/modules/add_student/view/widget/input_field.dart';
+import 'package:david_badminton/app/modules/add_student/controllers/add_student_controller.dart';
+import 'package:david_badminton/app/modules/add_student/views/widget/gender_dropdown.dart';
+import 'package:david_badminton/app/modules/add_student/views/widget/input_field.dart';
+import 'package:david_badminton/app/modules/add_student/views/widget/shift_dropdown.dart';
 import 'package:david_badminton/app/modules/home/views/widget/function/human_management.dart';
 import 'package:david_badminton/common/components/text_component.dart';
+import 'package:david_badminton/common/widgets/appbar/appbar_common.dart';
 import 'package:david_badminton/utils/constants/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,21 +27,15 @@ class _AddStudentState extends State<AddStudent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: TextComponent(
-          content: 'Thêm học viên',
-          color: Colors.white,
-          isTitle: true,
-        ),
-        iconTheme: IconThemeData(color: Colors.white),
-        centerTitle: true,
-        backgroundColor: AppColor.secondaryBlue,
-      ),
+      appBar: AppBarCommon(title: 'Thêm học viên'),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+        padding: EdgeInsets.only(left: 8.w, right: 8.w, bottom: 18.h),
         child: ListView(
           children: [
+            SizedBox(
+              height: 18.h,
+            ),
             CircleAvatar(
               radius: 60.sp,
             ),
@@ -114,20 +111,7 @@ class _AddStudentState extends State<AddStudent> {
                 SizedBox(
                   width: 10.w,
                 ),
-                Expanded(
-                  flex: 2,
-                  child: InputField(
-                    controller: controller.stdGender,
-                    fieldName: 'Giới tính',
-                    icon: Icon(
-                      Icons.transgender,
-                      size: 26.sp,
-                    ),
-                    isDropdown: true,
-                    isCompulsory: true,
-                    options: gender,
-                  ),
-                ),
+                Expanded(flex: 2, child: GenderDropdown()),
               ],
             ),
             SizedBox(
@@ -141,7 +125,7 @@ class _AddStudentState extends State<AddStudent> {
               height: 10.h,
             ),
             InputField(
-              controller: controller.course,
+              controller: controller.stdCourseId,
               fieldName: 'Khóa học',
               icon: Icon(
                 Icons.sports_tennis_rounded,
@@ -154,22 +138,12 @@ class _AddStudentState extends State<AddStudent> {
             SizedBox(
               height: 20.h,
             ),
-            InputField(
-              controller: controller.courseShift,
-              fieldName: 'Ca học',
-              icon: Icon(
-                Icons.schedule,
-                size: 26.sp,
-              ),
-              isDropdown: true,
-              isCompulsory: true,
-              options: gender,
-            ),
+            ShiftDropdown(),
             SizedBox(
               height: 20.h,
             ),
             InputField(
-              controller: controller.coach,
+              controller: controller.courseCoachId,
               fieldName: 'Huấn luyện viên',
               icon: Icon(
                 IconlyBold.profile,
@@ -183,7 +157,21 @@ class _AddStudentState extends State<AddStudent> {
               height: 20.h,
             ),
             InputField(
-              controller: controller.tuition,
+              controller: controller.courseLocationId,
+              fieldName: 'Cơ sở',
+              icon: Icon(
+                IconlyBold.location,
+                size: 26.sp,
+              ),
+              isDropdown: true,
+              isCompulsory: true,
+              options: gender,
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            InputField(
+              controller: controller.stdTuition,
               fieldName: 'Học phí',
               icon: Icon(
                 Icons.monetization_on,
@@ -195,7 +183,7 @@ class _AddStudentState extends State<AddStudent> {
               height: 20.h,
             ),
             InputField(
-              controller: controller.startedDay,
+              controller: controller.stdStartDay,
               fieldName: 'Ngày bắt đầu học',
               icon: Icon(
                 Icons.calendar_month,
@@ -208,7 +196,7 @@ class _AddStudentState extends State<AddStudent> {
               height: 20.h,
             ),
             InputField(
-              controller: controller.status,
+              controller: controller.stdStatus,
               fieldName: 'Trạng thái',
               icon: Icon(
                 Icons.info,
@@ -222,7 +210,7 @@ class _AddStudentState extends State<AddStudent> {
               height: 20.h,
             ),
             InputField(
-              controller: controller.description,
+              controller: controller.stdDescription,
               fieldName: 'Mô tả',
               icon: Icon(
                 Icons.article,
@@ -240,7 +228,7 @@ class _AddStudentState extends State<AddStudent> {
               height: 10.h,
             ),
             InputField(
-              controller: controller.relativeName,
+              controller: controller.stdRelativeName,
               fieldName: 'Tên người giám hộ',
               icon: Icon(
                 IconlyBold.profile,
@@ -256,7 +244,7 @@ class _AddStudentState extends State<AddStudent> {
                 Expanded(
                   flex: 3,
                   child: InputField(
-                    controller: controller.relativeName,
+                    controller: controller.stdRelationship,
                     fieldName: 'Quan hệ',
                     icon: Icon(
                       Icons.family_restroom,
@@ -270,7 +258,7 @@ class _AddStudentState extends State<AddStudent> {
                 Expanded(
                   flex: 2,
                   child: InputField(
-                    controller: controller.relativeGender,
+                    controller: controller.stdRelativeGender,
                     fieldName: 'Giới tính',
                     icon: Icon(
                       Icons.transgender,
@@ -287,7 +275,7 @@ class _AddStudentState extends State<AddStudent> {
               height: 20.h,
             ),
             InputField(
-              controller: controller.relativePhone,
+              controller: controller.stdRelativePhone,
               fieldName: 'Điện thoại',
               icon: Icon(
                 IconlyBold.call,
@@ -298,7 +286,7 @@ class _AddStudentState extends State<AddStudent> {
               height: 20.h,
             ),
             InputField(
-              controller: controller.note,
+              controller: controller.stdNote,
               fieldName: 'Ghi chú',
               icon: Icon(
                 Icons.comment,
@@ -316,7 +304,7 @@ class _AddStudentState extends State<AddStudent> {
               height: 10.h,
             ),
             InputField(
-              controller: controller.healthInfo,
+              controller: controller.stdHealthStatus,
               fieldName: 'Thông tin sức khỏe',
               icon: Icon(
                 Icons.health_and_safety,
@@ -330,7 +318,7 @@ class _AddStudentState extends State<AddStudent> {
               children: [
                 Expanded(
                   child: InputField(
-                    controller: controller.height,
+                    controller: controller.stdHeight,
                     fieldName: 'Chiều cao',
                     icon: Icon(
                       Icons.straighten,
@@ -343,7 +331,7 @@ class _AddStudentState extends State<AddStudent> {
                 ),
                 Expanded(
                   child: InputField(
-                    controller: controller.weight,
+                    controller: controller.stdWeight,
                     fieldName: 'Cân nặng',
                     icon: Icon(
                       Icons.fitness_center,
@@ -361,7 +349,9 @@ class _AddStudentState extends State<AddStudent> {
         child: SizedBox(
           height: 50.h,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              controller.createStudent();
+            },
             child: TextComponent(
               content: 'Lưu',
               size: 22.sp,

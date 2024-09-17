@@ -12,19 +12,19 @@ class Auth {
       required this.username,
       required this.password});
 
-  factory Auth.fromJson(Map<String, dynamic> json) {
+  factory Auth.fromJson(Map<String, dynamic> json) {    //Map đại diện cho kiểu json
     //chuyeenr json thanh
     return Auth(
-      client_id: json['client_id'],
-      client_secret: json['client_secret'],
-      grant_type: json['grant_type'],
-      username: json['username'],
-      password: json['password'],
+        client_id: json['client_id'],
+        client_secret: json['client_secret'],
+        grant_type: json['grant_type'],
+        username: json['username'],
+        password: json['password'],                 //chuyển dữ liệu json thành dart
     );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = <String, dynamic>{};      // chuyẻn thành dart thành json
     data['client_id'] = client_id;
     data['client_secret'] = client_secret;
     data['grant_type'] = grant_type;

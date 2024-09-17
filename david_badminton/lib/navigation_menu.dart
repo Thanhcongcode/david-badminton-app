@@ -1,4 +1,5 @@
 import 'package:david_badminton/app/modules/home/views/home_screen.dart';
+import 'package:david_badminton/app/modules/profile/view/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -44,8 +45,6 @@ class NavigationController extends GetxController {
     Container(
       color: Colors.blue,
     ),
-    Container(
-      color: Colors.pink,
-    ),
+    ProfileScreen(),
   ];
 }

@@ -1,45 +1,51 @@
+///import 'dart:ffi';
+
 class Student {
-  double? defaultTuitionFee = 1000000.00;
-  int? shift;
-  int? status;
-  String? courseName;
-  String? healthStatus;
-  double? height;
-  double? weight;
-  int? id;
-  String? avatar;
-  String? name;
-  DateTime? dob;
-  String? phoneNumber;
-  bool? gender;
-  String? address;
-  String? numberId;
-  DateTime? dateRange;
-  String? issuedBy;
-  String? description;
-  DateTime? createdAt;
-  DateTime? updatedAt;
+  double defaultTuitionFee;
+  int shift;
+  int status;
+  String courseName;
+  String locationName;
+  String coachName;
+  String healthStatus;
+  double height;
+  double weight;
+  int id;
+  String avatar;
+  String name;
+  String dob;
+  String phoneNumber;
+  bool gender;
+  String address;
+  String numberId; // Đổi từ double sang String
+  String dateRange;
+  String issuedBy;
+  String description;
+  String createdAt;
+  String updatedAt;
 
   Student(
-    this.address,
-    this.avatar,
-    this.courseName,
-    this.createdAt,
-    this.dateRange,
     this.defaultTuitionFee,
-    this.description,
-    this.dob,
-    this.gender,
-    this.healthStatus,
-    this.height,
-    this.id,
-    this.issuedBy,
-    this.name,
-    this.numberId,
-    this.phoneNumber,
     this.shift,
     this.status,
-    this.updatedAt,
+    this.courseName,
+    this.locationName,
+    this.coachName,
+    this.healthStatus,
+    this.height,
     this.weight,
+    this.id,
+    this.avatar,
+    this.name,
+    this.dob,
+    this.phoneNumber,
+    this.gender,
+    this.address,
+    this.numberId,
+    this.dateRange,
+    this.issuedBy,
+    this.description,
+    this.createdAt,
+    this.updatedAt,
   );
 }

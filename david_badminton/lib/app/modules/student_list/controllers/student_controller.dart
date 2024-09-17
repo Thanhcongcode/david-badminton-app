@@ -1,149 +1,149 @@
 import 'package:get/get.dart';
+import 'package:david_badminton/api/api.dart';
+import 'package:david_badminton/model/student.dart';
 
 class StudentController extends GetxController {
-  // Danh sách tất cả sinh viên
-  RxList<Student> students = <Student>[].obs;
+  RxList<Student> students = <Student>[].obs; // Danh sách sinh viên
 
-  // Danh sách sinh viên sau khi tìm kiếm
-  RxList<Student> filteredStudents = <Student>[].obs;
+  RxBool isSelecting = false.obs; // Trạng thái chế độ chọn
+  RxBool isSelectAll = false.obs; // Trạng thái chọn tất cả
+  RxMap<int, RxList<bool>> pageCheckboxStates =
+      <int, RxList<bool>>{}.obs; // Trạng thái checkbox cho từng trang
+  var selectedStudents = <Student>[].obs; // Danh sách sinh viên đã chọn
 
-  // Danh sách sinh viên được hiển thị hiện tại
-  RxList<Student> displayedStudents = <Student>[].obs;
+  RxBool isLoading = true.obs; // Trạng thái đang tải dữ liệu
 
-  // Chuỗi tìm kiếm
-  RxString searchQuery = ''.obs;
-
-  // Trạng thái khi có thể chọn nhiều mục
-  var isSelecting = false.obs;
-  var selectedStudents = <Student>[].obs;
-
-  void toggleSelectionMode() {
-    isSelecting.value = !isSelecting.value;
-    print('selection mode');
-    if (!isSelecting.value) {
-      selectedStudents.clear(); // Xóa lựa chọn khi thoát chế độ chọn
-    }
-  }
-
-  void toggleStudentSelection(Student student) {
-    if (selectedStudents.contains(student)) {
-      selectedStudents.remove(student);
-    } else {
-      selectedStudents.add(student);
-    }
-  }
-
-  void clearSelection() {
-    selectedStudents.clear();
-    isSelecting.value = false;
-  }
-
-  // Thông tin phân trang
-  int _pageSize = 50;
-  int currentPage = 0;
+  RxBool isAscendingId = true.obs; // Trạng thái sắp xếp theo ID
+  RxBool isAscendingName = true.obs; // Trạng thái sắp xếp theo Tên
 
   @override
   void onInit() {
     super.onInit();
-    _loadStudents();
+    loadAllStudents();
   }
 
-  void _loadStudents() {
-    // Tải dữ liệu sinh viên từ nguồn dữ liệu (có thể là API, cơ sở dữ liệu, v.v.)
-    // Dữ liệu mẫu:
-    students.value = List.generate(
-      1000,
-      (index) => Student(
-        id: index + 1,
-        name: 'Nguyễn Gia Thị ${index + 1}',
-        details: 'Ca sáng 2 -4 -6',
-        type: 'Sinh viên',
-        birthDate: '01/01/2002',
-        phoneNumber: '0963267182',
-        coach: 'Nguyễn Anh',
-        status: 'Đang học',
-        fee: '5,000,000 VND',
-        result: 'Chưa đặt',
-      ),
-    );
-    filteredStudents.value = students;
-    _updateDisplayedStudents();
+  void sortById() {
+    bool ascending = !isAscendingId.value;
+    isAscendingId.value = ascending;
+    print(students.length);
+    students.sort(
+        (a, b) => ascending ? a.id.compareTo(b.id) : b.id.compareTo(a.id));
+    updatePageIndex(currentPage); // Cập nhật lại chỉ số trang hiện tại
   }
 
-  void updateSearchQuery(String query) {
-    searchQuery.value = query;
-    _filterStudents();
-    _updateDisplayedStudents();
+  void sortByName() {
+    bool ascending = !isAscendingName.value;
+    isAscendingName.value = ascending;
+    students.sort((a, b) =>
+        ascending ? a.name.compareTo(b.name) : b.name.compareTo(a.name));
+    updatePageIndex(currentPage);
   }
 
-  void _filterStudents() {
-    if (searchQuery.value.isEmpty) {
-      filteredStudents.value = students;
+
+
+  void loadAllStudents() async {
+    List<Student> allStudents = [];
+    try {
+      isLoading.value = true; // Bắt đầu loading
+
+      // Gọi API với page = 1 để lấy totalCount
+      var firstResponse = await Api.getAllStudents(
+          1, 1); // Gọi API để lấy totalCount, chỉ cần 1 record
+
+      // Lấy totalCount để làm pageSize
+      int totalCount = firstResponse.totalCount ?? 0;
+
+      // Gọi lại API với pageSize là totalCount để lấy toàn bộ học viên
+      var studentData = await Api.getAllStudents(1, totalCount);
+
+      allStudents.addAll(studentData.students);
+
+      students.value = allStudents; // Cập nhật danh sách học viên
+      print('Total students loaded: ${students.length}');
+    } catch (e) {
+      print('Error loading students: $e');
+    } finally {
+      isLoading.value = false; // Kết thúc loading dù có lỗi hay không
+    }
+  }
+
+  void toggleCheckbox(int index) {
+    int pageIndex = index ~/ rowsPerPage;
+    int rowIndex = index % rowsPerPage;
+    if (pageCheckboxStates.containsKey(pageIndex)) {
+      pageCheckboxStates[pageIndex]?[rowIndex] =
+          !(pageCheckboxStates[pageIndex]?[rowIndex] ?? false);
+    }
+    updateSelectedStudents();
+  }
+
+  void toggleSelectAll() {
+    bool newValue = !isSelectAll.value;
+    isSelectAll.value = newValue;
+    if (pageCheckboxStates.containsKey(currentPage)) {
+      pageCheckboxStates[currentPage] =
+          List.generate(rowsPerPage, (index) => newValue).obs;
+    }
+    updateSelectedStudents();
+  }
+
+  void updatePageIndex(int pageIndex) {
+currentPage = pageIndex;
+    if (!pageCheckboxStates.containsKey(pageIndex)) {
+      pageCheckboxStates[pageIndex] =
+          List.generate(rowsPerPage, (index) => false).obs;
+    }
+    isSelectAll.value =
+        pageCheckboxStates[pageIndex]!.every((checked) => checked);
+  }
+
+  void toggleSelectionMode() {
+    isSelecting.value = !isSelecting.value;
+    if (!isSelecting.value) {
+      selectedStudents.clear();
     } else {
-      filteredStudents.value = students.where((student) {
-        return student.name.contains(searchQuery.value);
-      }).toList();
-    }
-    _updateDisplayedStudents();
-  }
-
-  void _updateDisplayedStudents() {
-    int startIndex = currentPage * _pageSize;
-    int endIndex = startIndex + _pageSize;
-    if (endIndex > filteredStudents.length) {
-      endIndex = filteredStudents.length;
-    }
-    displayedStudents.value = filteredStudents.sublist(startIndex, endIndex);
-    update(); // Cập nhật trạng thái để giao diện biết sự thay đổi
-  }
-
-  void nextPage() {
-    if ((currentPage + 1) * _pageSize < filteredStudents.length) {
-      currentPage++;
-      _updateDisplayedStudents();
+      updateSelectedStudents();
     }
   }
 
-  void previousPage() {
-    if (currentPage > 0) {
-      currentPage--;
-      _updateDisplayedStudents();
+  void updateSelectedStudents() {
+    selectedStudents.clear();
+    for (int i = 0; i < students.length; i++) {
+      int pageIndex = i ~/ rowsPerPage;
+      int rowIndex = i % rowsPerPage;
+      if (pageCheckboxStates.containsKey(pageIndex) &&
+          pageCheckboxStates[pageIndex]?[rowIndex] == true) {
+        selectedStudents.add(students[i]);
+      }
     }
   }
-int get totalPages => (filteredStudents.length / _pageSize).ceil();
+    final RxList<String> classSessions = <String>[
+    "Ca 1: (8:00 - 10:00)",
+    "Ca 2: (10:00 - 12:00)",
+    "Ca 3: (14:00 - 16:00)",
+    "Ca 4: (15:00 - 17:00)",
+    "Ca 5: (16:00 - 18:00)",
+    "Ca 6: (18:00 - 20:00)",
+    "Ca 7: (20:00 - 22:00)",
+  ].obs;
 
-  String get displayRange {
-    int startIndex = currentPage * _pageSize + 1;
-    int endIndex = (currentPage + 1) * _pageSize;
-    if (endIndex > filteredStudents.length) {
-      endIndex = filteredStudents.length;
-    }
-    return 'Hiển thị từ $startIndex đến $endIndex trong tổng số ${filteredStudents.length}';
+
+  var _currentPage = 0.obs;
+  var _rowsPerPage = 10.obs;
+
+  int get currentPage => _currentPage.value;
+  set currentPage(int page) => _currentPage.value = page;
+
+  int get rowsPerPage => _rowsPerPage.value;
+  set rowsPerPage(int rows) => _rowsPerPage.value = rows;
+
+  List<Student> get paginatedStudents {
+    final startIndex = currentPage * rowsPerPage;
+    final endIndex = (startIndex + rowsPerPage < students.length)
+        ? startIndex + rowsPerPage
+        : students.length;
+    return students.sublist(startIndex, endIndex);
   }
-}
 
-class Student {
-  final int id;
-  final String name;
-  final String details;
-  final String type;
-  final String birthDate;
-  final String phoneNumber;
-  final String coach;
-  final String status;
-  final String fee;
-  final String result;
-
-  Student({
-    required this.id,
-    required this.name,
-    required this.details,
-    required this.type,
-    required this.birthDate,
-    required this.phoneNumber,
-    required this.coach,
-    required this.status,
-    required this.fee,
-    required this.result,
-  });
+  int get totalPages => (students.length / rowsPerPage).ceil();
 }

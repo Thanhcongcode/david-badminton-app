@@ -13,7 +13,7 @@ class StudentController extends GetxController {
 
   RxBool isLoading = true.obs; // Trạng thái đang tải dữ liệu
 
-  RxBool isAscendingId = true.obs; // Trạng thái sắp xếp theo ID
+  RxBool isAscendingId = false.obs; // Trạng thái sắp xếp theo ID
   RxBool isAscendingName = true.obs; // Trạng thái sắp xếp theo Tên
 
   @override
@@ -39,9 +39,7 @@ class StudentController extends GetxController {
     updatePageIndex(currentPage);
   }
 
-
-
-  void loadAllStudents() async {
+  Future<void> loadAllStudents() async {
     List<Student> allStudents = [];
     try {
       isLoading.value = true; // Bắt đầu loading
@@ -57,6 +55,9 @@ class StudentController extends GetxController {
       var studentData = await Api.getAllStudents(1, totalCount);
 
       allStudents.addAll(studentData.students);
+
+      // Sắp xếp danh sách sinh viên theo ID giảm dần
+      allStudents.sort((a, b) => b.id.compareTo(a.id));
 
       students.value = allStudents; // Cập nhật danh sách học viên
       print('Total students loaded: ${students.length}');
@@ -88,7 +89,7 @@ class StudentController extends GetxController {
   }
 
   void updatePageIndex(int pageIndex) {
-currentPage = pageIndex;
+    currentPage = pageIndex;
     if (!pageCheckboxStates.containsKey(pageIndex)) {
       pageCheckboxStates[pageIndex] =
           List.generate(rowsPerPage, (index) => false).obs;
@@ -117,7 +118,8 @@ currentPage = pageIndex;
       }
     }
   }
-    final RxList<String> classSessions = <String>[
+
+  final RxList<String> classSessions = <String>[
     "Ca 1: (8:00 - 10:00)",
     "Ca 2: (10:00 - 12:00)",
     "Ca 3: (14:00 - 16:00)",
@@ -126,7 +128,6 @@ currentPage = pageIndex;
     "Ca 6: (18:00 - 20:00)",
     "Ca 7: (20:00 - 22:00)",
   ].obs;
-
 
   var _currentPage = 0.obs;
   var _rowsPerPage = 10.obs;

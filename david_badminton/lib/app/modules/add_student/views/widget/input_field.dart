@@ -10,21 +10,25 @@ import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
 
 class InputField extends StatefulWidget {
-  InputField(
-      {super.key,
-      required this.controller,
-      required this.fieldName,
-      required this.icon,
-      this.isCompulsory = false,
-      this.inputType = TextInputType.text,
-      this.isDatePicker = false,
-      this.isDropdown = false,
-      this.options = const [],
-      this.readOnly = false,
-      this.isDetail = false});
+  InputField({
+    super.key,
+    required this.controller,
+    required this.fieldName,
+    required this.icon,
+    this.isCompulsory = false,
+    this.inputType = TextInputType.text,
+    this.isDatePicker = false,
+    this.isDropdown = false,
+    this.options = const [],
+    this.readOnly = false,
+    this.isDetail = false,
+    this.softWrap = false,
+    this.maxLines = 1
+  });
 
   TextEditingController controller;
   String fieldName;
+  int maxLines;
   Widget icon;
   bool isCompulsory;
   TextInputType inputType;
@@ -35,6 +39,8 @@ class InputField extends StatefulWidget {
   bool readOnly;
   bool isDetail;
 
+  bool softWrap;
+
   @override
   State<InputField> createState() => _InputFieldState();
 }
@@ -42,20 +48,21 @@ class InputField extends StatefulWidget {
 class _InputFieldState extends State<InputField> {
   final controller = Get.put(AddStudentController());
 
- Future<void> _selectDate(BuildContext context) async {
-  final DateTime? pickedDate = await showDatePicker(
-    context: context,
-    initialDate: DateTime.now(),
-    firstDate: DateTime(1900),
-    lastDate: DateTime(2100),
-  );
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
 
-  if (pickedDate != null) {
-    setState(() {
-      widget.controller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
-    });
+    if (pickedDate != null) {
+      setState(() {
+        widget.controller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+      });
+    }
   }
-}
+
   String? _selectedValue;
 
   @override
@@ -71,6 +78,8 @@ class _InputFieldState extends State<InputField> {
             widget.readOnly == true ? null : _selectDate(context);
           },
           decoration: InputDecoration(
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 18.h, horizontal: 5.w),
             isDense: true,
             prefixIcon: IconButton(
               icon: widget.icon,
@@ -88,8 +97,14 @@ class _InputFieldState extends State<InputField> {
                       children: [
                         TextSpan(
                           text: '${widget.fieldName} ',
-                          style: TextStyle(
+style: TextStyle(
                               fontSize: 16.sp), // Định dạng văn bản phần đầu
+                        ),
+                        TextSpan(
+                          text: '*',
+                          style: TextStyle(
+                              fontSize: 24.sp,
+                              color: Colors.red), // Định dạng văn bản phần đầu
                         ),
                       ],
                     ),
@@ -127,6 +142,8 @@ class _InputFieldState extends State<InputField> {
             _selectDate(context);
           },
           decoration: InputDecoration(
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 18.h, horizontal: 5.w),
             isDense: true,
             prefixIcon: IconButton(
               icon: widget.icon,
@@ -162,7 +179,7 @@ class _InputFieldState extends State<InputField> {
               ),
               borderRadius: BorderRadius.circular(10),
             ),
-            enabledBorder: OutlineInputBorder(
+enabledBorder: OutlineInputBorder(
               borderSide:
                   const BorderSide(color: Colors.grey // Default border color
                       ),
@@ -200,12 +217,8 @@ class _InputFieldState extends State<InputField> {
           );
         }).toList(),
         onChanged: (_) {},
-        icon: Icon(
-          IconlyLight.arrow_down_2,
-          size: 26.sp,
-        ),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
+          contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 5.w),
           label: widget.isCompulsory == true
               ? Text.rich(
                   TextSpan(
@@ -251,7 +264,7 @@ class _InputFieldState extends State<InputField> {
         ),
       );
     } else {
-      //chính thức
+//chính thức
       return SizedBox(
         child: TextFormField(
           controller: widget.controller,
@@ -268,8 +281,11 @@ class _InputFieldState extends State<InputField> {
           //   }
           //   return null;
           // },
-          keyboardType: widget.inputType,
+          maxLines: widget.maxLines !=1 ? null : 1,
+          keyboardType: widget.inputType ,
           decoration: InputDecoration(
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 18.h, horizontal: 5.w),
             isDense: true,
             enabled: widget.isDetail ? false : true,
 
@@ -286,7 +302,8 @@ class _InputFieldState extends State<InputField> {
                         TextSpan(
                           text: '${widget.fieldName} ',
                           style: TextStyle(
-                              fontSize: 18.sp), // Định dạng văn bản phần đầu
+                            fontSize: 18.sp,
+                          ), // Định dạng văn bản phần đầu
                         ),
                         TextSpan(
                           text: '*',
@@ -298,15 +315,17 @@ class _InputFieldState extends State<InputField> {
                       ],
                     ),
                   )
-                : TextComponent(
-                    content: widget.fieldName,
-                    size: 18.sp,
+                : Text(
+                    widget.fieldName,
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                    ),
+                    softWrap: widget.softWrap,
                   ),
-            hintText: widget.fieldName,
+            hintText: widget.isDetail ? widget.fieldName : null,
             hintStyle: const TextStyle(
               color: Colors.black26,
             ),
-            labelStyle: TextStyle(overflow: TextOverflow.ellipsis),
             border: OutlineInputBorder(
               borderSide: const BorderSide(
                 color: Colors.black26, // Default border color
@@ -321,7 +340,7 @@ class _InputFieldState extends State<InputField> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(color: AppColor.primaryBlue),
-              borderRadius: BorderRadius.circular(10),
+borderRadius: BorderRadius.circular(10),
             ),
             fillColor: Colors.white,
           ),

@@ -5,7 +5,6 @@ import 'package:david_badminton/model/attend_data.dart/coach_attend.dart';
 import 'package:david_badminton/model/attend_data.dart/course_attend.dart';
 import 'package:david_badminton/model/attend_data.dart/location_attend.dart';
 import 'package:david_badminton/model/attend_data.dart/student_attend.dart';
-
 import 'package:david_badminton/model/location.dart';
 import 'package:david_badminton/model/coach.dart';
 import 'package:david_badminton/model/student.dart';
@@ -15,7 +14,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 
 final storage = FlutterSecureStorage();
 
@@ -73,7 +71,10 @@ class AttendanceController extends GetxController {
     }
 
     try {
-      final selectedDate = DateFormat('dd/MM/yyyy').parse(dateController.text);
+      // Đảm bảo định dạng ngày khớp với chuỗi trong dateController.text
+      final selectedDate = DateFormat('yyyy-MM-dd').parse(dateController.text);
+      print("Date string: ${dateController.text}");
+      print("Parsed date: $selectedDate");
 
       final students = await Api.getStudentAttendList(
         locationId: selectedBranchId.value!,
@@ -81,10 +82,10 @@ class AttendanceController extends GetxController {
         coachId: selectedCoachId.value!,
         shift: selectedShiftId.value!,
         createdAt: selectedDate,
-      );
+);
 
       for (var student in attendStudent) {
-student.isPresent = await getStudentAttendance(student.id);
+        student.isPresent = await getStudentAttendance(student.id);
       }
 
       // Cập nhật danh sách học sinh
@@ -120,7 +121,7 @@ student.isPresent = await getStudentAttendance(student.id);
 
   // Chuyển đổi định dạng ngày từ dd/MM/yyyy sang ISO8601
   String convertToIsoDate(String date) {
-    DateFormat inputFormat = DateFormat('dd/MM/yyyy'); // Định dạng gốc
+    DateFormat inputFormat = DateFormat('yyyy/MM/dd'); // Định dạng gốc
     DateTime parsedDate =
         inputFormat.parse(date); // Chuyển từ string sang DateTime
     String isoDate = parsedDate.toIso8601String(); // Chuyển thành ISO8601
@@ -173,9 +174,10 @@ student.isPresent = await getStudentAttendance(student.id);
   }
 
   @override
-  void onInit() async {
+void onInit() async {
     super.onInit();
-dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    print(dateController.text);
 
     fetchAttendData();
   }
@@ -278,8 +280,8 @@ dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Thành công'),
-            content: const Text('Điểm danh đã được lưu thành công.'),
-actions: <Widget>[
+content: const Text('Điểm danh đã được lưu thành công.'),
+            actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Đóng dialog

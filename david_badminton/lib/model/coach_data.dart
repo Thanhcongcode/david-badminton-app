@@ -6,16 +6,12 @@ class CoachData {
   int? currentPage;
   int? pageSize;
   List<Coach>? coaches;
-  String? message;
-  int? statusCode;
 
-  CoachData(
-    this.currentPage,
-    this.message,
-    this.pageSize,
-    this.statusCode,
-    this.coaches,
-    this.totalCount,
-    this.totalPages,
-  );
+  CoachData({
+    required this.currentPage,
+    required this.pageSize,
+    required this.coaches,
+    required this.totalCount,
+    required this.totalPages,
+  });
 }

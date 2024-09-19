@@ -33,6 +33,8 @@ class LoginForm extends StatelessWidget {
               // },
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 18.h, horizontal: 5.w),
                   isDense: true,
                   prefixIcon: Icon(
                     IconlyLight.user_1,
@@ -81,6 +83,8 @@ class LoginForm extends StatelessWidget {
                 //
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 18.h, horizontal: 5.w),
                     isDense: true,
                     prefixIcon: Icon(IconlyLight.lock),
                     suffixIcon: IconButton(

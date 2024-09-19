@@ -21,6 +21,8 @@ class StudentManagement extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+   
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -147,8 +149,8 @@ class StudentManagement extends StatelessWidget {
                         ),
                       ),
                       child: controller.isSelecting.value
-                          ? TextComponent(content: 'Hủy', size: 14)
-                          : TextComponent(content: 'Chọn', size: 14),
+                          ? TextComponent(content: 'Hủy', size: 14.sp)
+                          : TextComponent(content: 'Chọn', size: 14.sp),
                     ),
                   );
                 }),

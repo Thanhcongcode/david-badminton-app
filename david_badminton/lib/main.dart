@@ -7,11 +7,9 @@ import 'package:permission_handler/permission_handler.dart';
 void main() async {
   runApp(const MyApp());
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await requestLocationPermission();
-
 }
-
 
 Future<void> requestLocationPermission() async {
   // Kiểm tra quyền truy cập vị trí

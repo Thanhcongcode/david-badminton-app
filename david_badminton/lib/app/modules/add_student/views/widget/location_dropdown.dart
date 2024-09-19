@@ -5,30 +5,31 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
-class ShiftDropdown extends StatelessWidget {
+class LocationDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AddStudentController controller = Get.find();
 
     return Obx(() {
-      final items =
-          controller.shiftOptions.entries.map<DropdownMenuItem<int>>((entry) {
+      final items = controller.locations.map((location) {
         return DropdownMenuItem<int>(
-          value: entry.value,
-          child: Text(entry.key),
+          child: Text(location.name),
+          value: location.id,
         );
       }).toList();
 
       return CustomDropdown<int>(
-        label: 'Ca học',
-        prefixIcon: Icons.schedule,
+        label: 'Cơ sở',
+        prefixIcon: IconlyBold.location,
         items: items,
-        value: controller.selectedShift.value,
+        value: controller.selectedLocationId.value,
         onChanged: (newValue) {
           if (newValue != null) {
-            controller.selectedShift.value = newValue;
+            controller.selectedLocationId.value = newValue;
           }
         },
+        isRequired: true,
+        
       );
     });
   }

@@ -5,25 +5,23 @@ import 'package:david_badminton/model/student.dart';
 
 class CoachController extends GetxController {
   RxList<Coach> coaches = <Coach>[].obs; // Danh sách sinh viên
-  
+
   RxBool isSelecting = false.obs; // Trạng thái chế độ chọn
   RxBool isSelectAll = false.obs; // Trạng thái chọn tất cả
-  RxMap<int, RxList<bool>> pageCheckboxStates = <int, RxList<bool>>{}.obs; // Trạng thái checkbox cho từng trang
+  RxMap<int, RxList<bool>> pageCheckboxStates =
+      <int, RxList<bool>>{}.obs; // Trạng thái checkbox cho từng trang
   var selectedCoaches = <Coach>[].obs; // Danh sách sinh viên đã chọn
 
-
-
-  RxBool isLoading = true.obs; // Trạng thái đang tải dữ liệu 
+  RxBool isLoading = true.obs; // Trạng thái đang tải dữ liệu
 
   RxBool isAscendingId = true.obs; // Trạng thái sắp xếp theo ID
   RxBool isAscendingName = true.obs; // Trạng thái sắp xếp theo Tên
-    RxBool isAscendingAddress = true.obs; // Trạng thái sắp xếp theo Địa chỉ
-
+  RxBool isAscendingAddress = true.obs; // Trạng thái sắp xếp theo Địa chỉ
 
   @override
   void onInit() {
     super.onInit();
-    loadCoaches();
+    loadAllCoaches();
   }
 
   void sortById() {
@@ -45,46 +43,78 @@ class CoachController extends GetxController {
   void sortByAddress() {
     bool ascending = !isAscendingAddress.value;
     isAscendingAddress.value = ascending;
-    coaches.sort((a, b) => ascending ? a.address!.compareTo(b.address!) : b.address!.compareTo(a.address!));
+    coaches.sort((a, b) => ascending
+        ? a.address!.compareTo(b.address!)
+        : b.address!.compareTo(a.address!));
     updatePageIndex(currentPage);
   }
 
-  void loadCoaches() async {
-  try {
-    List<Coach> coachList = await Api.getCoaches();
-    isLoading.value = false;
-    coaches.value = coachList;
-    updatePageIndex(0); // Khởi tạo trạng thái checkbox cho trang đầu tiên
-  } catch (e) {
-    print('Error loading students: $e');
-    isLoading.value = false;
+//    void loadCoaches() async {
+//   try {
+//     List<Coach> coachList = await Api.getAllCoaches(1,1);
+//     isLoading.value = false;
+//     coaches.value = coachList;
+//     updatePageIndex(0); // Khởi tạo trạng thái checkbox cho trang đầu tiên
+//   } catch (e) {
+//     print('Error loading students: $e');
+//     isLoading.value = false;
+//   }
+// }
+
+  void loadAllCoaches() async {
+    List<Coach> allCoaches = [];
+    try {
+      isLoading.value = true; // Bắt đầu loading
+
+      // Gọi API với page = 1 để lấy totalCount
+      var firstResponse = await Api.getAllCoaches(
+          1, 1); // Gọi API để lấy totalCount, chỉ cần 1 record
+
+      // Lấy totalCount để làm pageSize
+      int totalCount = firstResponse.totalCount ?? 0;
+
+      // Gọi lại API với pageSize là totalCount để lấy toàn bộ học viên
+      var coachData = await Api.getAllCoaches(1, totalCount);
+
+      allCoaches.addAll(coachData.coaches!);
+
+      coaches.value = allCoaches; // Cập nhật danh sách học viên
+      print('Total coaches loaded: ${coaches.length}');
+    } catch (e) {
+      print('Error loading coaches: $e');
+    } finally {
+      isLoading.value = false; // Kết thúc loading dù có lỗi hay không
+    }
   }
-}
 
   void toggleCheckbox(int index) {
     int pageIndex = index ~/ rowsPerPage;
     int rowIndex = index % rowsPerPage;
     if (pageCheckboxStates.containsKey(pageIndex)) {
-      pageCheckboxStates[pageIndex]?[rowIndex] = !(pageCheckboxStates[pageIndex]?[rowIndex] ?? false);
+      pageCheckboxStates[pageIndex]?[rowIndex] =
+          !(pageCheckboxStates[pageIndex]?[rowIndex] ?? false);
     }
-    updateSelectedStudents();
+updateSelectedStudents();
   }
 
   void toggleSelectAll() {
     bool newValue = !isSelectAll.value;
     isSelectAll.value = newValue;
     if (pageCheckboxStates.containsKey(currentPage)) {
-      pageCheckboxStates[currentPage] = List.generate(rowsPerPage, (index) => newValue).obs;
-    } 
+      pageCheckboxStates[currentPage] =
+          List.generate(rowsPerPage, (index) => newValue).obs;
+    }
     updateSelectedStudents();
   }
 
   void updatePageIndex(int pageIndex) {
     currentPage = pageIndex;
     if (!pageCheckboxStates.containsKey(pageIndex)) {
-      pageCheckboxStates[pageIndex] = List.generate(rowsPerPage, (index) => false).obs;
+      pageCheckboxStates[pageIndex] =
+          List.generate(rowsPerPage, (index) => false).obs;
     }
-isSelectAll.value = pageCheckboxStates[pageIndex]!.every((checked) => checked);
+    isSelectAll.value =
+        pageCheckboxStates[pageIndex]!.every((checked) => checked);
   }
 
   void toggleSelectionMode() {
@@ -117,7 +147,7 @@ isSelectAll.value = pageCheckboxStates[pageIndex]!.every((checked) => checked);
   int get rowsPerPage => _rowsPerPage.value;
   set rowsPerPage(int rows) => _rowsPerPage.value = rows;
 
-  List<Coach> get paginatedStudents {
+  List<Coach> get paginatedCoaches {
     final startIndex = currentPage * rowsPerPage;
     final endIndex = (startIndex + rowsPerPage < coaches.length)
         ? startIndex + rowsPerPage

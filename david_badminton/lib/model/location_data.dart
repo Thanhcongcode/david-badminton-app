@@ -5,17 +5,13 @@ class LocationData {
   int? totalPages;
   int? currentPage;
   int? pageSize;
-  List<Location>? branches;
-  String? message;
-  int? statusCode;
+  List<Location>? locations;
 
-  LocationData(
-    this.currentPage,
-    this.message,
-    this.pageSize,
-    this.statusCode,
-    this.branches,
-    this.totalCount,
-    this.totalPages,
-  );
+  LocationData({
+    required this.currentPage,
+    required this.pageSize,
+    required this.locations,
+    required this.totalCount,
+    required this.totalPages,
+  });
 }

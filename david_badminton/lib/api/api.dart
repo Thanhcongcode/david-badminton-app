@@ -214,10 +214,12 @@ class Api {
         'https://api.davidbadminton.com/students?page=$page&pageSize=$pageSize&search=');
 
     try {
-      final token = await storage.read(key: 'access_token');
+      String? token = await storage.read(key: 'access_token');
 
       if (token == null) {
-        print('Token is null');
+        print('Token is null. Trying to refresh token.');
+        await refreshToken();
+        token = await storage.read(key: 'access_token');
       }
 
       final http.Response response =
@@ -274,19 +276,136 @@ class Api {
             totalCount: totalCount,
             totalPages: totalPages);
       } else {
-        throw Exception('Failed to load data');
+        if (response.statusCode == 401) {
+          await refreshToken();
+          return await getAllStudents(page);
+        } else {
+          throw Exception('Failed to load students: ${response.reasonPhrase}');
+        }
       }
     } catch (e) {
       throw Exception("Error: $e");
     }
   }
 
-  static Future<List<Coach>> getCoaches() async {
-    List<CoachData> coachData = [];
-    List<Coach> coaches = [];
+  // static Future<List<Coach>> getCoaches() async {
+  //   List<CoachData> coachData = [];
+  //   List<Coach> coaches = [];
 
+  //   var url = Uri.parse(
+  //       'https://api.davidbadminton.com/coaches?page=1&pageSize=4&seach=');
+
+  //   try {
+  //     String? token = await storage.read(key: 'access_token');
+
+  //     if (token == null) {
+  //       print('Token is null. Trying to refresh token.');
+  //       await refreshToken();
+  //       token = await storage.read(key: 'access_token');
+  //     }
+
+  //     final http.Response response =
+  //         await http.get(url, headers: {'Authorization': 'Bearer ${token}'});
+
+  //     if (response.statusCode == 200) {
+  //       var data = jsonDecode(response.body);
+  //       var dataContent = data['data'];
+
+  //       int? totalCount = dataContent['totalCount'];
+  //       int? totalPages = dataContent['totalPages'];
+  //       int? pageSize = dataContent['pageSize'];
+  //       int? currentPage = dataContent['currentPage'];
+  //       String? message = dataContent['message'];
+  //       int? statusCode = dataContent['statusCode'];
+  //       coachData.add(CoachData(currentPage, message, pageSize, statusCode,
+  //           coaches, totalCount, totalPages));
+
+  //       dataContent['coaches'].forEach((item) => {
+  //             coaches.add(Coach(
+  //               item['id'] ?? '',
+  //               item['avatar'] ?? '',
+  //               item['name'] ?? '',
+  //               item['dob'] ?? '',
+  //               item['phoneNumber'] ?? '',
+  //               item['gender'] ?? '',
+  //               item['address'] ?? '',
+  //               item['numberId'] ?? '',
+  //               item['dateRange'] ?? '',
+  //               item['issuedBy'] ?? '',
+  //               item['description'] ?? '',
+  //               item['createdAt'] ?? '',
+  //               item['updatedAt'] ?? '',
+  //             ))
+  //           });
+
+  //       return coaches;
+  //     } else {
+  //       if (response.statusCode == 401) {
+  //         // Unauthorized
+  //         await refreshToken();
+  //         return await getCoaches(); // Retry after refreshing token
+  //       }
+  //       return [];
+  //     }
+  //   } catch (e) {
+  //     throw Exception("error ${e}");
+  //   }
+  // }
+
+  // static Future<List<Location>> getLocations() async {
+  //   List<LocationData> branchData = [];
+  //   List<Location> branches = [];
+
+  //   var url = Uri.parse(
+  //       'https://api.davidbadminton.com/locations?page=1&pageSize=4&seach=');
+
+  //   try {
+  //     String? token = await storage.read(key: 'access_token');
+
+  //     if (token == null) {
+  //       print('Token is null. Trying to refresh token.');
+  //       await refreshToken();
+  //       token = await storage.read(key: 'access_token');
+  //     }
+
+  //     final http.Response response =
+  //         await http.get(url, headers: {'Authorization': 'Bearer ${token}'});
+
+  //     if (response.statusCode == 200) {
+  //       var data = jsonDecode(response.body);
+
+  //       var dataContent = data['data'];
+
+  //       int? totalCount = dataContent['totalCount'];
+  //       int? totalPages = dataContent['totalPages'];
+  //       int? pageSize = dataContent['pageSize'];
+  //       int? currentPage = dataContent['currentPage'];
+  //       String? message = dataContent['message'];
+  //       int? statusCode = dataContent['statusCode'];
+  //       branchData.add(LocationData(currentPage, message, pageSize, statusCode,
+  //           branches, totalCount, totalPages));
+
+  //       dataContent['locations'].forEach((item) => {
+  //             branches.add(Location(item['id'], item['name'], item['address'],
+  //                 item['createdAt'], item['updatedAt']))
+  //           });
+  //       return branches;
+  //     } else {
+  //       if (response.statusCode == 401) {
+  //         await refreshToken();
+  //         return await getLocations();
+  //       }
+  //       return [];
+  //     }
+  //   } catch (e) {
+  //     throw Exception("error ${e}");
+  //   }
+  // }
+
+  static Future<CoachData> getAllCoaches(int page, [int pageSize = 10]) async {
+    List<Coach> coaches = [];
     var url = Uri.parse(
-        'https://api.davidbadminton.com/coaches?page=1&pageSize=4&seach=');
+        'https://api.davidbadminton.com/coaches?page=$page&pageSize=$pageSize&search=');
 
     try {
       String? token = await storage.read(key: 'access_token');
@@ -298,7 +417,7 @@ class Api {
       }
 
       final http.Response response =
-          await http.get(url, headers: {'Authorization': 'Bearer ${token}'});
+          await http.get(url, headers: {'Authorization': 'Bearer $token'});
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
@@ -308,49 +427,51 @@ class Api {
         int? totalPages = dataContent['totalPages'];
         int? pageSize = dataContent['pageSize'];
         int? currentPage = dataContent['currentPage'];
-        String? message = dataContent['message'];
-        int? statusCode = dataContent['statusCode'];
-        coachData.add(CoachData(currentPage, message, pageSize, statusCode,
-            coaches, totalCount, totalPages));
 
-        dataContent['coaches'].forEach((item) => {
-              coaches.add(Coach(
-                item['id'] ?? '',
-                item['avatar'] ?? '',
-                item['name'] ?? '',
-                item['dob'] ?? '',
-                item['phoneNumber'] ?? '',
-                item['gender'] ?? '',
-                item['address'] ?? '',
-                item['numberId'] ?? '',
-                item['dateRange'] ?? '',
-                item['issuedBy'] ?? '',
-                item['description'] ?? '',
-                item['createdAt'] ?? '',
-                item['updatedAt'] ?? '',
-              ))
-            });
+        coaches = (dataContent['coaches'] as List).map((item) {
+          return Coach(
+            item['id'] ?? '',
+            item['avatar'] ?? '',
+            item['name'] ?? '',
+            item['dob'] ?? '',
+            item['phoneNumber'] ?? '',
+            item['gender'] ?? '',
+            item['address'] ?? '',
+            item['numberId'] ?? '',
+            item['dateRange'] ?? '',
+            item['issuedBy'] ?? '',
+            item['description'] ?? '',
+            item['createdAt'] ?? '',
+            item['updatedAt'] ?? '',
+          );
+        }).toList();
 
-        return coaches;
+        return CoachData(
+          currentPage: currentPage,
+          pageSize: pageSize,
+          coaches: coaches,
+          totalCount: totalCount,
+          totalPages: totalPages,
+        );
       } else {
         if (response.statusCode == 401) {
-          // Unauthorized
+          // Không được phép
           await refreshToken();
-          return await getCoaches(); // Retry after refreshing token
+          return await getAllCoaches(
+              page, pageSize); // Thử lại sau khi làm mới token
         }
-        return [];
+        throw Exception('Không thể tải dữ liệu');
       }
     } catch (e) {
-      throw Exception("error ${e}");
+      throw Exception("Lỗi: $e");
     }
   }
 
-  static Future<List<Location>> getLocations() async {
-    List<LocationData> branchData = [];
+  static Future<LocationData> getAllLocations(int page,
+      [int pageSize = 10]) async {
     List<Location> branches = [];
-
     var url = Uri.parse(
-        'https://api.davidbadminton.com/locations?page=1&pageSize=4&seach=');
+        'https://api.davidbadminton.com/locations?page=$page&pageSize=$pageSize&search=');
 
     try {
       String? token = await storage.read(key: 'access_token');
@@ -362,36 +483,45 @@ class Api {
       }
 
       final http.Response response =
-          await http.get(url, headers: {'Authorization': 'Bearer ${token}'});
+          await http.get(url, headers: {'Authorization': 'Bearer $token'});
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-
         var dataContent = data['data'];
 
         int? totalCount = dataContent['totalCount'];
         int? totalPages = dataContent['totalPages'];
         int? pageSize = dataContent['pageSize'];
         int? currentPage = dataContent['currentPage'];
-        String? message = dataContent['message'];
-        int? statusCode = dataContent['statusCode'];
-        branchData.add(LocationData(currentPage, message, pageSize, statusCode,
-            branches, totalCount, totalPages));
 
-        dataContent['locations'].forEach((item) => {
-              branches.add(Location(item['id'], item['name'], item['address'],
-                  item['createdAt'], item['updatedAt']))
-            });
-        return branches;
+        branches = (dataContent['locations'] as List).map((item) {
+          return Location(
+            item['id'] ?? '',
+            item['name'] ?? '',
+            item['address'] ?? '',
+            item['createdAt'] ?? '',
+            item['updatedAt'] ?? '',
+          );
+        }).toList();
+
+        return LocationData(
+          currentPage: currentPage,
+          pageSize: pageSize,
+          locations: branches,
+          totalCount: totalCount,
+          totalPages: totalPages,
+        );
       } else {
         if (response.statusCode == 401) {
+          // Không được phép
           await refreshToken();
-          return await getLocations();
+          return await getAllLocations(
+              page, pageSize); // Thử lại sau khi làm mới token
         }
-        return [];
+        throw Exception('Không thể tải dữ liệu');
       }
     } catch (e) {
-      throw Exception("error ${e}");
+      throw Exception("Lỗi: $e");
     }
   }
 
@@ -403,10 +533,12 @@ class Api {
     List<CourseAttend> courses = [];
 
     try {
-      final token = await storage.read(key: 'access_token');
+      String? token = await storage.read(key: 'access_token');
 
       if (token == null) {
         print('Token is null');
+        await refreshToken();
+        token = await storage.read(key: 'access_token');
       }
       final response =
           await http.get(url, headers: {'Authorization': 'Bearer ${token}'});
@@ -461,6 +593,11 @@ class Api {
           'coaches': coaches,
         };
       } else {
+        if (response.statusCode == 401) {
+          // Không được phép
+          await refreshToken();
+          return await getAttendData(); // Thử lại sau khi làm mới token
+        }
         throw Exception('Failed to load data nè');
       }
     } catch (e) {
@@ -481,10 +618,12 @@ class Api {
     final List<StudentAttend> students = [];
 
     try {
-      final token = await storage.read(key: 'access_token');
+      String? token = await storage.read(key: 'access_token');
 
       if (token == null) {
-        throw Exception('Token is null');
+        print('Token is null');
+        await refreshToken();
+        token = await storage.read(key: 'access_token');
       }
 
       final response =
@@ -511,6 +650,17 @@ class Api {
         print(students);
         return students;
       } else {
+        if (response.statusCode == 401) {
+          // Không được phép
+          await refreshToken();
+          return await getStudentAttendList(
+            coachId: coachId,
+            courseId: courseId,
+            createdAt: createdAt,
+            locationId: locationId,
+            shift: locationId,
+          ); // Thử lại sau khi làm mới token
+        }
         throw Exception('Failed to load students');
       }
     } catch (e) {
@@ -530,8 +680,14 @@ class Api {
     final url = Uri.parse('https://api.davidbadminton.com/attendances');
     try {
       // Lấy token từ shared preferences
-      final token = await storage.read(key: 'access_token');
+      String? token = await storage.read(key: 'access_token');
       final sub = await storage.read(key: 'sub');
+
+      if (token == null) {
+        print('Token is null');
+        await refreshToken();
+        token = await storage.read(key: 'access_token');
+      }
 
       // Tạo JSON body
       final body = jsonEncode({
@@ -561,8 +717,19 @@ class Api {
         print('Attendance saved successfully');
         // Xử lý thành công nếu cần
       } else {
-        print(response.body);
-        print(response.statusCode);
+        if (response.statusCode == 401) {
+          // Không được phép
+          await refreshToken();
+          return await postSaveAttendance(
+            coachId: coachId,
+            courseId: courseId,
+            createdAt: createdAt,
+            locationId: locationId,
+            position: position,
+            shift: shift,
+            studentIds: studentIds,
+          ); // Thử lại sau khi làm mới token
+        }
         print('Failed to save attendance: ${response.reasonPhrase}');
         // Xử lý lỗi nếu cần
       }
@@ -572,7 +739,7 @@ class Api {
     }
   }
 
-  static Future<void> postStudent({
+  static Future<Map<String, dynamic>> postStudent({
     required String avatar,
     required String name,
     required String dob,
@@ -592,9 +759,6 @@ class Api {
     required String healthStatus,
     required double height,
     required double weight,
-    // required int courseId,
-    // required int locationId,
-    // required int coachId,
     required List<Map<String, dynamic>> parents,
     required String startDate,
     required String endDate,
@@ -604,7 +768,6 @@ class Api {
       String? token = await storage.read(key: 'access_token');
 
       if (token == null) {
-        print('Token is null. Trying to refresh token.');
         await refreshToken();
         token = await storage.read(key: 'access_token');
       }
@@ -629,11 +792,6 @@ class Api {
         'healthStatus': healthStatus,
         'height': height,
         'weight': weight,
-        // 'course': {
-        //   // 'courseId': courseId,
-        //   // 'locationId': locationId,
-        //   // 'coachId': coachId,
-        // },
         'parents': parents,
         'startDate': startDate,
         'endDate': endDate,
@@ -651,12 +809,18 @@ class Api {
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
+      // Kiểm tra statusCode và body
+      // Kiểm tra statusCode và body
       if (response.statusCode == 200) {
-        print('Student data posted successfully');
-      } else {
-        if (response.statusCode == 401) {
-          await refreshToken();
-          return postStudent(
+        final responseBody = jsonDecode(response.body);
+        // Nếu response body có statusCode khác 200, trả về lỗi
+        if (responseBody['statusCode'] != 200) {
+          return {'success': false, 'message': responseBody['message']};
+        }
+        return {'success': true, 'message': 'Student data posted successfully'};
+      } else if (response.statusCode == 401) {
+        await refreshToken();
+        await postStudent(
             avatar: avatar,
             name: name,
             dob: dob,
@@ -676,19 +840,17 @@ class Api {
             healthStatus: healthStatus,
             height: height,
             weight: weight,
-            // courseId: courseId,
-            // locationId: locationId,
-            // coachId: coachId,
             parents: parents,
             startDate: startDate,
-            endDate: endDate,
-          );
-        }
-        print('Failed to post student data: ${response.statusCode}');
-        print(response.reasonPhrase);
+            endDate: endDate);
+        return {'success': true, 'message': 'Student data posted successfully'};
+      } else {
+        // Trả về thông điệp lỗi từ server
+        final responseBody = jsonDecode(response.body);
+        return {'success': false, 'message': responseBody['message']};
       }
     } catch (e) {
-      print('Error: $e');
+      return {'success': false, 'message': 'Error: $e'};
     }
   }
 }

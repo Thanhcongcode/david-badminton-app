@@ -199,7 +199,7 @@ style: ElevatedButton.styleFrom(
                         DataColumn(label: Text('Tên')),
                         DataColumn(label: Text('Địa chỉ')),
                       ],
-                      rows: controller.branches
+                      rows: controller.locations
                           .asMap()
                           .map((index, branch) {
                             return MapEntry(

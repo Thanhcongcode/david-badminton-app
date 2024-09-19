@@ -4,7 +4,7 @@ import 'package:david_badminton/api/api.dart';
 import 'package:david_badminton/model/student.dart';
 
 class LocationController extends GetxController {
-  RxList<Location> branches = <Location>[].obs; // Danh sách chi nhánh\
+  RxList<Location> locations = <Location>[].obs; // Danh sách chi nhánh\
 
   RxBool isSelecting = false.obs; // Trạng thái chế độ chọn
   RxBool isSelectAll = false.obs; // Trạng thái chọn tất cả
@@ -13,7 +13,6 @@ class LocationController extends GetxController {
       <int, RxList<bool>>{}.obs; // Trạng thái checkbox cho từng trang
 
   var selectedBranches = <Location>[].obs; // Danh sách sinh viên đã chọn
-
 
   RxBool isLoading = true.obs; // Trạng thái đang tải dữ liệu
 
@@ -25,13 +24,13 @@ class LocationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadBranches();
+    loadAllLocations();
   }
 
   void sortById() {
     bool ascending = !isAscendingId.value;
     isAscendingId.value = ascending;
-    branches.sort(
+    locations.sort(
         (a, b) => ascending ? a.id!.compareTo(b.id!) : b.id!.compareTo(a.id!));
     updatePageIndex(currentPage); // Cập nhật lại chỉ số trang hiện tại
   }
@@ -39,7 +38,7 @@ class LocationController extends GetxController {
   void sortByName() {
     bool ascending = !isAscendingName.value;
     isAscendingName.value = ascending;
-    branches.sort((a, b) =>
+    locations.sort((a, b) =>
         ascending ? a.name!.compareTo(b.name!) : b.name!.compareTo(a.name!));
     updatePageIndex(currentPage);
   }
@@ -47,7 +46,9 @@ class LocationController extends GetxController {
   void sortByAddress() {
     bool ascending = !isAscendingAddress.value;
     isAscendingAddress.value = ascending;
-    branches.sort((a, b) => ascending ? a.address!.compareTo(b.address!) : b.address!.compareTo(a.address!));
+    locations.sort((a, b) => ascending
+        ? a.address!.compareTo(b.address!)
+        : b.address!.compareTo(a.address!));
     updatePageIndex(currentPage);
   }
 
@@ -61,15 +62,29 @@ class LocationController extends GetxController {
         pageCheckboxStates[pageIndex]!.every((checked) => checked);
   }
 
-  void loadBranches() async {
+  void loadAllLocations() async {
+    List<Location> allLocations = [];
     try {
-      List<Location> branchList = await Api.getLocations();
-      isLoading.value = false;
-      branches.value = branchList;
-      updatePageIndex(0); // Khởi tạo trạng thái checkbox cho trang đầu tiên
+      isLoading.value = true; // Bắt đầu loading
+
+      // Gọi API với page = 1 để lấy totalCount
+      var firstResponse = await Api.getAllLocations(
+          1, 1); // Gọi API để lấy totalCount, chỉ cần 1 record
+
+      // Lấy totalCount để làm pageSize
+      int totalCount = firstResponse.totalCount ?? 0;
+
+      // Gọi lại API với pageSize là totalCount để lấy toàn bộ học viên
+      var loactionData = await Api.getAllLocations(1, totalCount);
+
+      allLocations.addAll(loactionData.locations!);
+
+      locations.value = allLocations; // Cập nhật danh sách học viên
+      print('Total locations loaded: ${locations.length}');
     } catch (e) {
-      print('Error loading branch: $e');
-      isLoading.value = false;
+print('Error loading locations: $e');
+    } finally {
+      isLoading.value = false; // Kết thúc loading dù có lỗi hay không
     }
   }
 
@@ -86,7 +101,7 @@ class LocationController extends GetxController {
   void toggleSelectAll() {
     bool newValue = !isSelectAll.value;
     isSelectAll.value = newValue;
-if (pageCheckboxStates.containsKey(currentPage)) {
+    if (pageCheckboxStates.containsKey(currentPage)) {
       pageCheckboxStates[currentPage] =
           List.generate(rowsPerPage, (index) => newValue).obs;
     }
@@ -104,12 +119,12 @@ if (pageCheckboxStates.containsKey(currentPage)) {
 
   void updateSelectedBranches() {
     selectedBranches.clear();
-    for (int i = 0; i < branches.length; i++) {
+    for (int i = 0; i < locations.length; i++) {
       int pageIndex = i ~/ rowsPerPage;
       int rowIndex = i % rowsPerPage;
       if (pageCheckboxStates.containsKey(pageIndex) &&
           pageCheckboxStates[pageIndex]?[rowIndex] == true) {
-        selectedBranches.add(branches[i]);
+        selectedBranches.add(locations[i]);
       }
     }
   }
@@ -123,13 +138,13 @@ if (pageCheckboxStates.containsKey(currentPage)) {
   int get rowsPerPage => _rowsPerPage.value;
   set rowsPerPage(int rows) => _rowsPerPage.value = rows;
 
-  List<Location> get paginatedStudents {
+  List<Location> get paginatedLocations {
     final startIndex = currentPage * rowsPerPage;
-    final endIndex = (startIndex + rowsPerPage < branches.length)
+    final endIndex = (startIndex + rowsPerPage < locations.length)
         ? startIndex + rowsPerPage
-        : branches.length;
-    return branches.sublist(startIndex, endIndex);
+        : locations.length;
+    return locations.sublist(startIndex, endIndex);
   }
 
-  int get totalPages => (branches.length / rowsPerPage).ceil();
+  int get totalPages => (locations.length / rowsPerPage).ceil();
 }

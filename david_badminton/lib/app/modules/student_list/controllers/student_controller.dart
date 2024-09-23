@@ -16,6 +16,8 @@ class StudentController extends GetxController {
   RxBool isAscendingId = false.obs; // Trạng thái sắp xếp theo ID
   RxBool isAscendingName = true.obs; // Trạng thái sắp xếp theo Tên
 
+  RxInt totalStudents = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -50,6 +52,7 @@ class StudentController extends GetxController {
 
       // Lấy totalCount để làm pageSize
       int totalCount = firstResponse.totalCount ?? 0;
+      totalStudents.value = totalCount;
 
       // Gọi lại API với pageSize là totalCount để lấy toàn bộ học viên
       var studentData = await Api.getAllStudents(1, totalCount);
@@ -58,6 +61,8 @@ class StudentController extends GetxController {
 
       // Sắp xếp danh sách sinh viên theo ID giảm dần
       allStudents.sort((a, b) => b.id.compareTo(a.id));
+
+      updatePageIndex(1);
 
       students.value = allStudents; // Cập nhật danh sách học viên
       print('Total students loaded: ${students.length}');
@@ -130,7 +135,9 @@ class StudentController extends GetxController {
   ].obs;
 
   var _currentPage = 0.obs;
-  var _rowsPerPage = 10.obs;
+  var _rowsPerPage = 15.obs;
+
+  RxInt selectedRowsPerPage = 10.obs;
 
   int get currentPage => _currentPage.value;
   set currentPage(int page) => _currentPage.value = page;
@@ -139,12 +146,12 @@ class StudentController extends GetxController {
   set rowsPerPage(int rows) => _rowsPerPage.value = rows;
 
   List<Student> get paginatedStudents {
-    final startIndex = currentPage * rowsPerPage;
-    final endIndex = (startIndex + rowsPerPage < students.length)
-        ? startIndex + rowsPerPage
+    final startIndex = currentPage * selectedRowsPerPage.value;
+    final endIndex = (startIndex + selectedRowsPerPage.value < students.length)
+        ? startIndex + selectedRowsPerPage.value
         : students.length;
     return students.sublist(startIndex, endIndex);
   }
 
-  int get totalPages => (students.length / rowsPerPage).ceil();
+  int get totalPages => (students.length / selectedRowsPerPage.value).ceil();
 }

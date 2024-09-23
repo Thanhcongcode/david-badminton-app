@@ -6,6 +6,9 @@ import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
 class LocationDropdown extends StatelessWidget {
+  LocationDropdown({this.isEdit = false, required this.value});
+  final bool isEdit;
+  RxInt? value;
   @override
   Widget build(BuildContext context) {
     final AddStudentController controller = Get.find();
@@ -19,17 +22,16 @@ class LocationDropdown extends StatelessWidget {
       }).toList();
 
       return CustomDropdown<int>(
-        label: 'Cơ sở',
+        label: isEdit ? '' : 'Cơ sở',
         prefixIcon: IconlyBold.location,
         items: items,
-        value: controller.selectedLocationId.value,
+        value: value?.value,
         onChanged: (newValue) {
           if (newValue != null) {
-            controller.selectedLocationId.value = newValue;
+            value?.value = newValue;
           }
         },
-        isRequired: true,
-        
+        isRequired: isEdit ? false : true,
       );
     });
   }

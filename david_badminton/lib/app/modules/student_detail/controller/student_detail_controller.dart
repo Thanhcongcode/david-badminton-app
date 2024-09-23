@@ -17,6 +17,8 @@ class StudentDetailController extends GetxController {
   TextEditingController stdCoachName = TextEditingController();
   TextEditingController stdLocationName = TextEditingController();
   TextEditingController stdShift = TextEditingController();
+  TextEditingController stdAvatar = TextEditingController();
+  TextEditingController stdDescription = TextEditingController();
 
   TextEditingController stdTuitionFee = TextEditingController();
   TextEditingController stdStatus = TextEditingController();
@@ -38,6 +40,7 @@ class StudentDetailController extends GetxController {
     // Nhận thông tin học sinh từ argument khi điều hướng
     student = Get.arguments as Student;
     getShiftName(student.shift);
+    setStudentStatusToTextController();
   }
 
   @override
@@ -49,6 +52,16 @@ class StudentDetailController extends GetxController {
     isEdit.value = !isEdit.value;
   }
 
+  RxBool selectedGender = true.obs;
+  RxBool selectedGuardianGender = true.obs;
+
+  RxInt selectedShift = 0.obs;
+  RxInt selectedStatus = 0.obs; // Không sử dụng nullable
+
+  RxInt selectedCourseId = 0.obs;
+  RxInt? selectedCoachId;
+  RxInt? selectedLocationId;
+
   final RxList<String> classSessions = <String>[
     "Ca 1: (8:00 - 10:00)",
     "Ca 2: (10:00 - 12:00)",
@@ -58,6 +71,34 @@ class StudentDetailController extends GetxController {
     "Ca 6: (18:00 - 20:00)",
     "Ca 7: (20:00 - 22:00)",
   ].obs;
+  // Status options
+  final Map<String, int> statusOptions = {
+    'Còn học': 0,
+    'Nghỉ học': 1,
+    'Tạm nghỉ': 2,
+  };
+
+  String? getStatusString(int status) {
+return statusOptions.entries
+        .firstWhere(
+          (entry) => entry.value == status,
+          orElse: () =>
+              MapEntry('Unknown', -1), // Giá trị mặc định nếu không tìm thấy
+        )
+        .key;
+  }
+
+  void setStudentStatusToTextController() {
+    final int statusValue =
+        student.status; // Giá trị status kiểu int
+    final String? statusString =
+        getStatusString(statusValue); // Lấy chuỗi tương ứng
+
+    if (statusString != null) {
+      stdStatus.text =
+          statusString; // Gán chuỗi vào TextEditingController
+    }
+  }
 
   // Phương thức để chuyển đổi số nguyên thành tên ca học
   String getShiftName(int shift) {

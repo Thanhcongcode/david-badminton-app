@@ -26,39 +26,46 @@ class AddLocation extends StatelessWidget {
         padding: EdgeInsets.symmetric(
           horizontal: 8.w,
         ),
-        child: ListView(
-          children: [
-            SizedBox(
-              height: 20.h,
-            ),
+        child: Form(
+          key: controller.addLocationFormKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 20.h,
+                ),
 
-            //name
-            InputField(
-              controller: controller.nameController,
-              fieldName: 'Tên cơ sở',
-              icon: Icon(
-                Icons.stadium,
-                size: 26.sp,
-              ),
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
+                //name
+                InputField(
+                  controller: controller.nameController,
+                  fieldName: 'Tên cơ sở',
+                  icon: Icon(
+                    Icons.stadium,
+                    size: 26.sp,
+                  ),
+                  isCompulsory: true,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
 
-            InputField(
-              controller: controller.addressController,
-              fieldName: 'Địa chỉ',
-              softWrap: true,
-              icon: Icon(
-                IconlyBold.location,
-                size: 26.sp,
-              ),
-            ),
+                InputField(
+                  controller: controller.addressController,
+                  fieldName: 'Địa chỉ',
+                  softWrap: true,
+                  icon: Icon(
+                    IconlyBold.location,
+                    size: 26.sp,
+                  ),
+                  isCompulsory: true,
+                ),
 
-            SizedBox(
-              height: 20.h,
+                SizedBox(
+                  height: 20.h,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: Padding(
@@ -66,7 +73,9 @@ class AddLocation extends StatelessWidget {
         child: SizedBox(
           height: 50.h,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              if (controller.addLocationFormKey.currentState!.validate()) {}
+            },
             child: TextComponent(
               content: 'Lưu',
               size: 22.sp,

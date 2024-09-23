@@ -4,7 +4,11 @@ import 'package:david_badminton/utils/device/app_device.dart';
 import 'package:flutter/material.dart';
 
 class AppBarCommon extends StatelessWidget implements PreferredSizeWidget {
-  AppBarCommon({super.key, required this.title, this.automaticallyImplyLeading = true, this.actions = const []});
+  AppBarCommon(
+      {super.key,
+      required this.title,
+      this.automaticallyImplyLeading = true,
+      this.actions = const []});
   String title;
   bool automaticallyImplyLeading;
   List<Widget> actions;

@@ -1,3 +1,4 @@
+import 'package:david_badminton/app/modules/add_student/views/widget/gender_dropdown.dart';
 import 'package:david_badminton/app/modules/add_student/views/widget/input_field.dart';
 import 'package:david_badminton/app/modules/coach_detail/controllers/coach_detail_controller.dart';
 import 'package:david_badminton/app/modules/student_detail/controller/student_detail_controller.dart';
@@ -67,7 +68,7 @@ class CoachDetail extends StatelessWidget {
                         size: 22.sp,
                         weight: FontWeight.bold,
                         color: Colors.white,
-                      ),
+),
                       style: ElevatedButton.styleFrom(
 backgroundColor: AppColor.buttonGreen,
                         shape: BeveledRectangleBorder(
@@ -111,9 +112,7 @@ backgroundColor: AppColor.buttonGreen,
             SizedBox(
               height: 20.h,
             ),
-            SizedBox(
-              height: 10.h,
-            ),
+            
             TitleField(
               title: 'Mã số huấn luyện viên: ',
             ),
@@ -162,6 +161,7 @@ backgroundColor: AppColor.buttonGreen,
                   size: 26.sp,
                 ),
                 isDetail: controller.isEdit.value ? false : true,
+                inputType: TextInputType.phone,
               ),
             ),
 
@@ -174,7 +174,7 @@ backgroundColor: AppColor.buttonGreen,
             ),
             Obx(
               () => InputField(
-                controller: controller.hlvAdress,
+controller: controller.hlvAdress,
 fieldName: '',
                 icon: Icon(
                   IconlyBold.location,
@@ -227,15 +227,26 @@ fieldName: '',
                       TitleField(
                         title: 'Giới tính: ',
                       ),
-                      InputField(
-                        controller: controller.hlvGender,
-                        fieldName: '',
-                        icon: Icon(
-                          Icons.transgender,
-                          size: 26.sp,
-                        ),
-                        isDetail: true,
-                      ),
+                      Obx(() {
+                        if (controller.isEdit.value) {
+                          return GenderDropdown(
+                            isEdit: true,
+                            value: controller.selectedGender,
+                          );
+                        } else {
+                          // When isEdit is false, show the InputField
+                          return InputField(
+                            controller: controller.hlvGender,
+                            fieldName: '',
+                            icon: Icon(
+                              Icons.transgender,
+                              size: 26.sp,
+                            ),
+                            isDetail:
+                                true, // isDetail should be true when not in edit mode
+                          );
+                        }
+                      }),
                     ],
                   ),
                 ),
@@ -250,7 +261,7 @@ fieldName: '',
             //phone
             Obx(
               () => InputField(
-                controller: controller.hlvDescription,
+controller: controller.hlvDescription,
                 fieldName: '',
                 icon: Icon(
                   IconlyBold.call,

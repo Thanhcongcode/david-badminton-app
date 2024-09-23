@@ -65,8 +65,7 @@ class AddStudentController extends GetxController {
 
       // Gọi lại API với pageSize là totalCount để lấy toàn bộ học viên
       var coachData = await Api.getAllCoaches(1, totalCount);
-
-      allCoaches.addAll(coachData.coaches!);
+allCoaches.addAll(coachData.coaches!);
 
       coaches.value = allCoaches; // Cập nhật danh sách học viên
       print('Total coaches loaded: ${coaches.length}');
@@ -108,10 +107,11 @@ class AddStudentController extends GetxController {
 // Dropdown values and controllers
   RxBool selectedGender = true.obs;
   RxInt selectedShift = 0.obs;
-  RxInt selectedStatus = 0.obs;
-  var selectedCourseId = Rxn<int>();
-  var selectedCoachId = Rxn<int>();
-  var selectedLocationId = Rxn<int>();
+  RxInt selectedStatus = 0.obs; // Không sử dụng nullable
+
+  RxInt selectedCourseId = 0.obs;
+  RxInt? selectedCoachId;
+  RxInt? selectedLocationId;
 
   // Gender options
   final Map<String, bool> genderOptions = {
@@ -145,22 +145,6 @@ class AddStudentController extends GetxController {
   };
 
   // DropdownButton widgets
-  DropdownButton<bool> genderDropdown() {
-    return DropdownButton<bool>(
-      value: selectedGender.value,
-      onChanged: (bool? newValue) {
-        if (newValue != null) {
-          selectedGender.value = newValue;
-        }
-      },
-      items: genderOptions.entries.map<DropdownMenuItem<bool>>((entry) {
-        return DropdownMenuItem<bool>(
-          value: entry.value,
-          child: Text(entry.key),
-        );
-      }).toList(),
-    );
-  }
 
   DropdownButton<int> shiftDropdown() {
     return DropdownButton<int>(
@@ -189,7 +173,7 @@ class AddStudentController extends GetxController {
 
     try {
       // Chuyển từ chuỗi ngày sang DateTime
-      DateTime parsedDate = inputFormat.parse(date);
+DateTime parsedDate = inputFormat.parse(date);
       // Chuyển từ DateTime sang chuỗi ISO 8601
       String isoDate =
           outputFormat.format(parsedDate.toUtc()); // Đổi sang UTC nếu cần thiết
@@ -198,23 +182,6 @@ class AddStudentController extends GetxController {
       print('Error parsing date: $e');
       return ''; // Trả về chuỗi rỗng nếu có lỗi
     }
-  }
-
-  DropdownButton<int> statusDropdown() {
-    return DropdownButton<int>(
-      value: selectedStatus.value,
-      onChanged: (int? newValue) {
-        if (newValue != null) {
-          selectedStatus.value = newValue;
-        }
-      },
-      items: statusOptions.entries.map<DropdownMenuItem<int>>((entry) {
-        return DropdownMenuItem<int>(
-          value: entry.value,
-          child: Text(entry.key),
-        );
-      }).toList(),
-    );
   }
 
   void customSnackBar(BuildContext context, String title, String message,
@@ -285,7 +252,7 @@ class AddStudentController extends GetxController {
                 onTap: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 },
-                child: Icon(
+child: Icon(
                   Icons.close,
                   color: Colors.grey,
                   size: 18.sp,
@@ -335,7 +302,7 @@ class AddStudentController extends GetxController {
         createdById: sub.toString(),
         shift: selectedShift.value,
         defaultTuitionFee: double.tryParse(stdTuition.text) ?? 0.0,
-        status: 0,
+        status: selectedStatus.value,
         healthStatus: stdHealthStatus.text,
         height: double.tryParse(stdHeight.text) ?? 0.0,
         weight: double.tryParse(stdWeight.text) ?? 0.0,

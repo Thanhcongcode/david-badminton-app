@@ -21,6 +21,8 @@ class LocationController extends GetxController {
   RxBool isAscendingName = true.obs; // Trạng thái sắp xếp theo Tên
   RxBool isAscendingAddress = true.obs; // Trạng thái sắp xếp theo Địa chỉ
 
+  RxInt totalLocations = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -73,13 +75,15 @@ class LocationController extends GetxController {
 
       // Lấy totalCount để làm pageSize
       int totalCount = firstResponse.totalCount ?? 0;
+      totalLocations.value = totalCount;
 
       // Gọi lại API với pageSize là totalCount để lấy toàn bộ học viên
       var loactionData = await Api.getAllLocations(1, totalCount);
 
       allLocations.addAll(loactionData.locations!);
 
-      locations.value = allLocations; // Cập nhật danh sách học viên
+      allLocations.sort((a, b) => a.id.compareTo(b.id));
+locations.value = allLocations; // Cập nhật danh sách học viên
       print('Total locations loaded: ${locations.length}');
     } catch (e) {
 print('Error loading locations: $e');
@@ -132,19 +136,21 @@ print('Error loading locations: $e');
   var _currentPage = 0.obs;
   var _rowsPerPage = 20.obs;
 
+  RxInt selectedRowsPerPage = 10.obs;
+
   int get currentPage => _currentPage.value;
   set currentPage(int page) => _currentPage.value = page;
 
   int get rowsPerPage => _rowsPerPage.value;
   set rowsPerPage(int rows) => _rowsPerPage.value = rows;
 
-  List<Location> get paginatedLocations {
-    final startIndex = currentPage * rowsPerPage;
-    final endIndex = (startIndex + rowsPerPage < locations.length)
-        ? startIndex + rowsPerPage
+  List<Location> get paginatedCoaches {
+    final startIndex = currentPage * selectedRowsPerPage.value;
+    final endIndex = (startIndex + selectedRowsPerPage.value < locations.length)
+        ? startIndex + selectedRowsPerPage.value
         : locations.length;
     return locations.sublist(startIndex, endIndex);
   }
 
-  int get totalPages => (locations.length / rowsPerPage).ceil();
+  int get totalPages => (locations.length / selectedRowsPerPage.value).ceil();
 }

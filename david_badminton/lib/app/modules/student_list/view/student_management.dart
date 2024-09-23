@@ -1,6 +1,7 @@
 import 'package:david_badminton/api/api.dart';
 
 import 'package:david_badminton/app/modules/add_student/views/add_student.dart';
+import 'package:david_badminton/app/modules/attendance/views/attendance_sheet.dart';
 import 'package:david_badminton/app/modules/student_detail/views/student_detail.dart';
 
 import 'package:flutter/material.dart';
@@ -21,8 +22,6 @@ class StudentManagement extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-   
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -34,6 +33,89 @@ class StudentManagement extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: AppColor.secondaryBlue,
+        actions: [
+          Obx(
+            () => TextButton(
+              onPressed: () {
+                controller.toggleSelectionMode();
+              },
+              child: controller.isSelecting.value
+                  ? TextComponent(
+                      content: 'Hủy',
+                      size: 14.sp,
+                      color: Colors.white,
+                    )
+                  : TextComponent(
+                      content: 'Chọn',
+                      size: 14.sp,
+                      color: Colors.white,
+                    ),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: Obx(
+        () => FloatingActionButton(
+          onPressed: controller.isSelecting.value
+              ? () {}
+              : () {
+                  Get.to(() => AddStudent());
+                },
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor:
+              controller.isSelecting.value ? Colors.red : AppColor.buttonGreen,
+          child: controller.isSelecting.value
+              ? Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                )
+              : Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Obx(
+              () {
+                final totalPages = controller.totalPages;
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: controller.currentPage > 0
+                          ? () {
+                              controller.currentPage--;
+                            }
+                          : null,
+                      icon: Icon(IconlyLight.arrow_left_2),
+                    ),
+                    SizedBox(width: 20.w),
+                    Text(
+                        'Trang ${controller.currentPage + 1} trên $totalPages'),
+                    SizedBox(width: 20.w),
+                    IconButton(
+                      onPressed: controller.currentPage < totalPages - 1
+                          ? () {
+                              controller.currentPage++;
+                              print(totalPages);
+                            }
+                          : null,
+                      icon: Icon(IconlyLight.arrow_right_2),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 16.h),
@@ -56,107 +138,37 @@ class StudentManagement extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 30.h),
-
-            // Add and Delete Buttons
+            SizedBox(height: 20.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      height: 40.h,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.to(() => AddStudent());
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              IconlyBold.plus,
-                              color: Colors.green,
-                              size: 18.sp,
-                            ),
-                            SizedBox(width: 5.sp),
-                            TextComponent(
-                              content: 'Thêm mới',
-                              size: 14.sp,
-                              color: Colors.green,
-                              weight: FontWeight.bold,
-                            ),
-                          ],
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            side: BorderSide(width: 0.2),
-                          ),
-                          backgroundColor: Colors.white,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Obx(() {
-                      return SizedBox(
-                        height: 40.h,
-                        child: controller.isSelecting.value
-                            ? ElevatedButton(
-                                onPressed: () {
-                                  // Action for delete
-                                },
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      IconlyBold.delete,
-                                      color: Colors.red,
-                                      size: 18.sp,
-                                    ),
-                                    SizedBox(width: 5.sp),
-                                    TextComponent(
-                                      content: 'Xóa',
-                                      size: 14.sp,
-                                      color: Colors.red,
-                                      weight: FontWeight.bold,
-                                    ),
-                                  ],
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                    side: BorderSide(width: 0.2),
-                                  ),
-                                  backgroundColor: Colors.white,
-                                ),
-                              )
-                            : null,
-                      );
-                    }),
-                  ],
+                Obx(
+                  () => TextComponent(
+                      content:
+                          'Tổng số học viên: ${controller.totalStudents.value}'),
                 ),
-                Obx(() {
-                  return SizedBox(
-                    height: 30.h,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        controller.toggleSelectionMode();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(0.8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: controller.isSelecting.value
-                          ? TextComponent(content: 'Hủy', size: 14.sp)
-                          : TextComponent(content: 'Chọn', size: 14.sp),
-                    ),
-                  );
-                }),
+                Obx(
+                  () => DropdownButton<int>(
+                    value: controller.selectedRowsPerPage.value,
+                    onChanged: (int? newValue) {
+                      if (newValue != null) {
+                        controller.selectedRowsPerPage.value = newValue;
+                        controller.updatePageIndex(0);
+                      }
+                    },
+                    dropdownColor: Colors.white,
+                    items: [5, 10, 15].map<DropdownMenuItem<int>>((int value) {
+                      return DropdownMenuItem<int>(
+                        value: value,
+                        child: Text('$value hàng'),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ],
             ),
-            SizedBox(height: 16.h),
+
+            SizedBox(height: 10.h),
             // Display Data Table or CircularProgressIndicator
             Obx(
               () {
@@ -172,36 +184,6 @@ class StudentManagement extends StatelessWidget {
               },
             ),
             SizedBox(height: 24.h),
-            // SizedBox(
-            //   height: 40.h,
-            //   child: ElevatedButton(
-            //     onPressed: () {
-            //       Get.to(() => AttendanceSheet());
-            //     },
-            //     style: ElevatedButton.styleFrom(
-            //         shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(5),
-            //         ),
-            //         backgroundColor: AppColor.primaryOrange),
-            //     child: Row(
-            //       mainAxisSize: MainAxisSize.min,
-            //       children: [
-            //         TextComponent(
-            //           content: 'Điểm danh',
-            //           color: Colors.white,
-            //           weight: FontWeight.bold,
-            //         ),
-            //         SizedBox(
-            //           width: 10,
-            //         ),
-            //         Icon(
-            //           IconlyLight.arrow_right,
-            //           color: Colors.white,
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -238,12 +220,47 @@ class StudentManagement extends StatelessWidget {
                             ),
                           ),
                         DataColumn(
-                          label: Text('ID'),
+                          label: Row(
+                            children: [
+                              Text('ID'),
+                              SizedBox(width: 5),
+                              if (controller.isAscendingId.value)
+                                Icon(
+                                  IconlyLight.arrow_up_2,
+                                  size: 16,
+                                )
+                              else
+                                Icon(
+                                  IconlyLight.arrow_down_2,
+                                  size: 16,
+                                )
+                            ],
+                          ),
                           onSort: (columnIndex, ascending) {
                             controller.sortById();
                           },
                         ),
-                        DataColumn(label: Text('Tên')),
+                        DataColumn(
+                          label: Row(
+                            children: [
+                              Text('Tên'),
+                              SizedBox(width: 5),
+                              if (controller.isAscendingName.value)
+                                Icon(
+                                  IconlyLight.arrow_up_2,
+                                  size: 16,
+                                )
+                              else
+                                Icon(
+                                  IconlyLight.arrow_down_2,
+                                  size: 16,
+                                )
+                            ],
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            controller.sortByName();
+                          },
+                        ),
                         DataColumn(label: Text('Ca học')),
                       ],
                       rows: controller.paginatedStudents
@@ -307,37 +324,6 @@ class StudentManagement extends StatelessWidget {
                           .toList(),
                     ),
                   ),
-                ),
-                Obx(
-                  () {
-                    final totalPages = controller.totalPages;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: controller.currentPage > 0
-                              ? () {
-                                  controller.currentPage--;
-                                }
-                              : null,
-                          icon: Icon(IconlyLight.arrow_left_2),
-                        ),
-                        SizedBox(width: 20.w),
-                        Text(
-                            'Trang ${controller.currentPage + 1} trên $totalPages'),
-                        SizedBox(width: 20.w),
-                        IconButton(
-                          onPressed: controller.currentPage < totalPages - 1
-                              ? () {
-                                  controller.currentPage++;
-                                  print(totalPages);
-                                }
-                              : null,
-                          icon: Icon(IconlyLight.arrow_right_2),
-                        ),
-                      ],
-                    );
-                  },
                 ),
               ],
             ),

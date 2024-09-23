@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
 class ShiftDropdown extends StatelessWidget {
+  ShiftDropdown({this.isEdit = false});
+  final bool isEdit;
   @override
   Widget build(BuildContext context) {
     final AddStudentController controller = Get.find();
@@ -20,7 +22,7 @@ class ShiftDropdown extends StatelessWidget {
       }).toList();
 
       return CustomDropdown<int>(
-        label: 'Ca học',
+        label: isEdit ? '' : 'Ca học',
         prefixIcon: Icons.schedule,
         items: items,
         value: controller.selectedShift.value,

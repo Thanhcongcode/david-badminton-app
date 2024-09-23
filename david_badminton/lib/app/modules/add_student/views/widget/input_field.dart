@@ -10,21 +10,20 @@ import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
 
 class InputField extends StatefulWidget {
-  InputField({
-    super.key,
-    required this.controller,
-    required this.fieldName,
-    required this.icon,
-    this.isCompulsory = false,
-    this.inputType = TextInputType.text,
-    this.isDatePicker = false,
-    this.isDropdown = false,
-    this.options = const [],
-    this.readOnly = false,
-    this.isDetail = false,
-    this.softWrap = false,
-    this.maxLines = 1
-  });
+  InputField(
+      {super.key,
+      required this.controller,
+      required this.fieldName,
+      required this.icon,
+      this.isCompulsory = false,
+      this.inputType = TextInputType.text,
+      this.isDatePicker = false,
+      this.isDropdown = false,
+      this.options = const [],
+      this.readOnly = false,
+      this.isDetail = false,
+      this.softWrap = false,
+      this.maxLines = 1});
 
   TextEditingController controller;
   String fieldName;
@@ -70,6 +69,10 @@ class _InputFieldState extends State<InputField> {
     if (widget.isDatePicker == true) {
       return SizedBox(
         child: TextFormField(
+          validator: widget.isCompulsory
+              ? (value) => Validation.validateEmtyText(widget.fieldName, value)
+              : null,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: widget.controller,
           onTapOutside: (event) {
             FocusManager.instance.primaryFocus?.unfocus();
@@ -97,7 +100,7 @@ class _InputFieldState extends State<InputField> {
                       children: [
                         TextSpan(
                           text: '${widget.fieldName} ',
-style: TextStyle(
+                          style: TextStyle(
                               fontSize: 16.sp), // Định dạng văn bản phần đầu
                         ),
                         TextSpan(
@@ -141,6 +144,10 @@ style: TextStyle(
           onTap: () {
             _selectDate(context);
           },
+          validator: widget.isCompulsory
+              ? (value) => Validation.validateEmtyText(widget.fieldName, value)
+              : null,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             contentPadding:
                 EdgeInsets.symmetric(vertical: 18.h, horizontal: 5.w),
@@ -179,7 +186,7 @@ style: TextStyle(
               ),
               borderRadius: BorderRadius.circular(10),
             ),
-enabledBorder: OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
               borderSide:
                   const BorderSide(color: Colors.grey // Default border color
                       ),
@@ -275,14 +282,8 @@ enabledBorder: OutlineInputBorder(
               ? (value) => Validation.validateEmtyText(widget.fieldName, value)
               : null,
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          // validator: (value) {
-          //   if (value == null || value.isEmpty) {
-          //     return 'Vui lòng nhập ${fieldName}';
-          //   }
-          //   return null;
-          // },
-          maxLines: widget.maxLines !=1 ? null : 1,
-          keyboardType: widget.inputType ,
+          maxLines: widget.maxLines != 1 ? null : 1,
+          keyboardType: widget.inputType,
           decoration: InputDecoration(
             contentPadding:
                 EdgeInsets.symmetric(vertical: 18.h, horizontal: 5.w),
@@ -340,7 +341,7 @@ enabledBorder: OutlineInputBorder(
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(color: AppColor.primaryBlue),
-borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10),
             ),
             fillColor: Colors.white,
           ),

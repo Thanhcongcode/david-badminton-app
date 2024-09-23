@@ -8,6 +8,11 @@ import 'package:iconly/iconly.dart';
 // Đảm bảo đường dẫn đúng
 
 class CoachDropdown extends StatelessWidget {
+  CoachDropdown({this.isEdit = false, required this.value});
+  
+  final bool isEdit;
+  RxInt? value; // Thay đổi để cho phép giá trị null
+
   @override
   Widget build(BuildContext context) {
     final AddStudentController controller = Get.find();
@@ -21,16 +26,16 @@ class CoachDropdown extends StatelessWidget {
       }).toList();
 
       return CustomDropdown<int>(
-        label: 'Huấn luyện viên',
+        label: isEdit ? '' : 'Huấn luyện viên',
         prefixIcon: Icons.run_circle_outlined,
         items: items,
-        value: controller.selectedCoachId.value,
+        value: value?.value, // Lấy giá trị, có thể là null
         onChanged: (newValue) {
           if (newValue != null) {
-            controller.selectedCoachId.value = newValue;
+            value?.value = newValue; // Cập nhật giá trị nếu không null
           }
         },
-        isRequired: true,
+        isRequired: isEdit ? false : true,
       );
     });
   }

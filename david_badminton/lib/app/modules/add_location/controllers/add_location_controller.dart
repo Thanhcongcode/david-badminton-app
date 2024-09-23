@@ -11,16 +11,15 @@ import 'package:intl/intl.dart';
 final storage = FlutterSecureStorage();
 
 class AddLocationController extends GetxController {
-  
   var coachNumberIdController = TextEditingController();
-  
+
   var nameController = TextEditingController();
   var addressController = TextEditingController();
   var phoneController = TextEditingController();
   var dobController = TextEditingController();
   var description = TextEditingController();
 
-  
+  GlobalKey<FormState> addLocationFormKey = GlobalKey<FormState>();
 
   String generateRandomNumberId() {
     final random = Random();
@@ -104,7 +103,7 @@ class AddLocationController extends GetxController {
     DateFormat inputFormat = DateFormat("yyyy-MM-dd");
 
     // Định dạng đầu ra của ngày giờ ISO 8601
-DateFormat outputFormat = DateFormat("yyyy-MM-ddTHH:mm:ss.SSSZ");
+    DateFormat outputFormat = DateFormat("yyyy-MM-ddTHH:mm:ss.SSSZ");
 
     try {
       // Chuyển từ chuỗi ngày sang DateTime
@@ -135,6 +134,4 @@ DateFormat outputFormat = DateFormat("yyyy-MM-ddTHH:mm:ss.SSSZ");
       }).toList(),
     );
   }
-
-  
 }

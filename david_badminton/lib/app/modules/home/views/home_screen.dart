@@ -1,4 +1,5 @@
 import 'package:david_badminton/app/modules/attendance/controllers/attendance_controller.dart';
+import 'package:david_badminton/app/modules/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:david_badminton/common/widgets/custom_shape/containers/primary_header_container.dart';
@@ -16,6 +17,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final attendanceController = Get.put(AttendanceController());
+    final controller = Get.put(HomeController());
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
@@ -52,9 +54,9 @@ class HomeScreen extends StatelessWidget {
                   margin: EdgeInsets.symmetric(
                       horizontal: (width - searchBarWidth) / 2),
                   child: SearchContainer(
-                   
                     searchBarWidth: searchBarWidth,
                     text: 'Tìm kiếm...',
+                    focusNode: controller.searchFocusNode,
                   ),
                 ),
               ),

@@ -107,7 +107,7 @@ children: [
                 ),
 
                 //gender
-                Expanded(flex: 2, child: GenderDropdown())
+                Expanded(flex: 2, child: GenderDropdown(value: controller.selectedGender,))
               ],
             ),
             SizedBox(

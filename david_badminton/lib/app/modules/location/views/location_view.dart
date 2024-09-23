@@ -1,5 +1,7 @@
+import 'package:david_badminton/app/modules/add_location/views/add_location.dart';
 import 'package:david_badminton/app/modules/add_student/views/add_student.dart';
 import 'package:david_badminton/app/modules/location/controllers/location_controller.dart';
+import 'package:david_badminton/app/modules/location_detail/views/location_detail.dart';
 import 'package:david_badminton/common/components/text_component.dart';
 import 'package:david_badminton/common/widgets/custom_shape/containers/search_container.dart';
 import 'package:david_badminton/utils/constants/app_color.dart';
@@ -16,152 +18,154 @@ class LocationView extends StatelessWidget {
     // final BranchDataSource branchDataSource =
     //     BranchDataSource(controller.branches);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: TextComponent(
-          content: 'Danh sách cơ sở',
-          color: Colors.white,
-          isTitle: true,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: TextComponent(
+            content: 'Danh sách cơ sở',
+            color: Colors.white,
+            isTitle: true,
+          ),
+          iconTheme: IconThemeData(color: Colors.white),
+          centerTitle: true,
+          backgroundColor: AppColor.secondaryBlue,
         ),
-        iconTheme: IconThemeData(color: Colors.white),
-        centerTitle: true,
-        backgroundColor: AppColor.secondaryBlue,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 16.h),
-        child: Column(
-          children: [
-            // Search and Filter
-            Row(
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: SearchContainer(
-                   
-                    searchBarWidth: double.infinity,
-                    text: 'Tìm kiếm...',
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  flex: 1,
-                  child: Icon(Icons.filter),
-                ),
-              ],
+        floatingActionButton: Obx(
+          () => FloatingActionButton(
+            onPressed: () {
+              Get.to(() => AddLocation());
+            },
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-            SizedBox(height: 30.h),
-
-            // Add and Delete Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            backgroundColor: controller.isSelecting.value
+                ? Colors.red
+                : AppColor.buttonGreen,
+            child: controller.isSelecting.value
+                ? Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  )
+                : Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Obx(
+                () {
+                  final totalPages = controller.totalPages;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: controller.currentPage > 0
+                            ? () {
+                                controller.currentPage--;
+                              }
+                            : null,
+                        icon: Icon(IconlyLight.arrow_left_2),
+                      ),
+                      SizedBox(width: 20.w),
+                      Text(
+                          'Trang ${controller.currentPage + 1} trên $totalPages'),
+                      SizedBox(width: 20.w),
+                      IconButton(
+                        onPressed: controller.currentPage < totalPages - 1
+                            ? () {
+                                controller.currentPage++;
+                                print(totalPages);
+                              }
+                            : null,
+                        icon: Icon(IconlyLight.arrow_right_2),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 16.h),
+            child: Column(
               children: [
+                // Search and Filter
                 Row(
                   children: [
-                    SizedBox(
-                      height: 40.h,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.to(AddStudent());
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              IconlyBold.plus,
-                              color: Colors.green,
-size: 18.sp,
-                            ),
-                            SizedBox(width: 5.sp),
-                            TextComponent(
-                              content: 'Thêm mới',
-                              size: 14.sp,
-                              color: Colors.green,
-                              weight: FontWeight.bold,
-                            ),
-                          ],
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            side: BorderSide(width: 0.2),
-                          ),
-                          backgroundColor: Colors.white,
-                        ),
+                    Expanded(
+                      flex: 5,
+                      child: SearchContainer(
+                        searchBarWidth: double.infinity,
+                        text: 'Tìm kiếm...',
                       ),
                     ),
-                    SizedBox(width: 10),
-                    Obx(() {
-                      return SizedBox(
-                        height: 40.h,
-                        child: controller.isSelecting.value
-                            ? ElevatedButton(
-                                onPressed: () {
-                                  // Action for delete
-                                },
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      IconlyBold.delete,
-                                      color: Colors.red,
-                                      size: 18.sp,
-                                    ),
-                                    SizedBox(width: 5.sp),
-                                    TextComponent(
-                                      content: 'Xóa',
-                                      size: 14.sp,
-                                      color: Colors.red,
-                                      weight: FontWeight.bold,
-                                    ),
-                                  ],
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                    side: BorderSide(width: 0.2),
-                                  ),
-                                  backgroundColor: Colors.white,
-                                ),
-                              )
-                            : null,
-                      );
-                    }),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      flex: 1,
+                      child: Icon(Icons.filter),
+                    ),
                   ],
                 ),
-                Obx(() {
-                  return ElevatedButton(
-                    onPressed: () {
-                      controller.toggleSelectionMode();
-                    },
-                    child: controller.isSelecting.value
-                        ? TextComponent(content: 'Hủy')
-                        : TextComponent(content: 'Chọn', size: 16),
-style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.7),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                SizedBox(height: 20.h),
+
+                // Add and Delete Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Obx(
+                      () => TextComponent(
+                          content:
+                              'Tổng số cơ sở: ${controller.totalLocations.value}'),
+                    ),
+                    Obx(
+                      () => DropdownButton<int>(
+                        value: controller.selectedRowsPerPage.value,
+                        onChanged: (int? newValue) {
+                          if (newValue != null) {
+                            controller.selectedRowsPerPage.value = newValue;
+                            controller.updatePageIndex(0);
+                          }
+                        },
+                        dropdownColor: Colors.white,
+                        items:
+                            [5, 10, 15].map<DropdownMenuItem<int>>((int value) {
+                          return DropdownMenuItem<int>(
+                            value: value,
+                            child: Text('$value hàng'),
+                          );
+                        }).toList(),
                       ),
                     ),
-                  );
-                }),
+                  ],
+                ),
+                SizedBox(height: 10.sp),
+                // Student Table
+                Obx(
+                  () {
+                    if (controller.isLoading.value) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      return buildDataTable();
+                    }
+                  },
+                ),
               ],
             ),
-            SizedBox(height: 8.sp),
-
-            // Student Table
-            Obx(
-              () {
-                if (controller.isLoading.value) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  return buildDataTable();
-                }
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -183,6 +187,7 @@ style: ElevatedButton.styleFrom(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: DataTable(
+                      showCheckboxColumn: false,
                       headingRowColor: MaterialStateColor.resolveWith(
                           (states) => Colors.grey[350]!),
                       columns: [
@@ -195,16 +200,37 @@ style: ElevatedButton.styleFrom(
                               },
                             ),
                           ),
-                        DataColumn(label: Text('ID')),
-                        DataColumn(label: Text('Tên')),
-                        DataColumn(label: Text('Địa chỉ')),
+                        DataColumn(
+                          label: Text('ID'),
+                          onSort: (columnIndex, ascending) {
+                            controller.sortById();
+                          },
+                        ),
+                        DataColumn(
+                          label: Text('Tên'),
+                          onSort: (columnIndex, ascending) {
+                            controller.sortByName();
+                          },
+                        ),
+                        DataColumn(
+                          label: Text('Địa chỉ'),
+                          onSort: (columnIndex, ascending) {
+                            controller.sortByAddress();
+                          },
+                        ),
                       ],
                       rows: controller.locations
                           .asMap()
-                          .map((index, branch) {
+                          .map((index, location) {
                             return MapEntry(
                                 index,
                                 DataRow(
+                                  onSelectChanged: ((selected) {
+                                    if (selected ?? false) {
+                                      Get.to(() => LocationDetail(),
+                                          arguments: location);
+                                    }
+                                  }),
                                   cells: [
                                     if (controller.isSelecting.value)
                                       DataCell(
@@ -214,25 +240,25 @@ style: ElevatedButton.styleFrom(
                                                   ?[index] ??
                                               false,
                                           onChanged: (bool? value) {
-controller.toggleCheckbox(index +
+                                            controller.toggleCheckbox(index +
                                                 controller.currentPage *
                                                     controller.rowsPerPage);
                                           },
                                         ),
                                       ),
                                     DataCell(
-                                      Text(branch.id.toString()),
+                                      Text(location.id.toString()),
                                     ),
                                     DataCell(
                                       Text(
-                                        branch.name,
+                                        location.name,
                                         softWrap: true,
                                         maxLines: null,
                                       ),
                                     ),
                                     DataCell(
                                       Text(
-                                        branch.address,
+                                        location.address,
                                         softWrap: true,
                                         maxLines: null,
                                       ),
@@ -244,36 +270,6 @@ controller.toggleCheckbox(index +
                           .toList(),
                     ),
                   ),
-                ),
-                Obx(
-                  () {
-                    final totalPages = controller.totalPages;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: controller.currentPage > 0
-                              ? () {
-                                  controller.currentPage--;
-                                }
-                              : null,
-                          icon: Icon(IconlyLight.arrow_left_2),
-                        ),
-                        SizedBox(width: 20.w),
-                        Text(
-                            'Trang ${controller.currentPage + 1} trên $totalPages'),
-                        SizedBox(width: 20.w),
-                        IconButton(
-                          onPressed: controller.currentPage < totalPages - 1
-                              ? () {
-                                  controller.currentPage++;
-                                }
-                              : null,
-                          icon: Icon(IconlyLight.arrow_right_2),
-                        ),
-                      ],
-                    );
-                  },
                 ),
               ],
             ),

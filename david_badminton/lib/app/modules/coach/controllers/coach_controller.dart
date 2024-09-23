@@ -18,6 +18,8 @@ class CoachController extends GetxController {
   RxBool isAscendingName = true.obs; // Trạng thái sắp xếp theo Tên
   RxBool isAscendingAddress = true.obs; // Trạng thái sắp xếp theo Địa chỉ
 
+  RxInt totalCoaches = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -49,18 +51,6 @@ class CoachController extends GetxController {
     updatePageIndex(currentPage);
   }
 
-//    void loadCoaches() async {
-//   try {
-//     List<Coach> coachList = await Api.getAllCoaches(1,1);
-//     isLoading.value = false;
-//     coaches.value = coachList;
-//     updatePageIndex(0); // Khởi tạo trạng thái checkbox cho trang đầu tiên
-//   } catch (e) {
-//     print('Error loading students: $e');
-//     isLoading.value = false;
-//   }
-// }
-
   void loadAllCoaches() async {
     List<Coach> allCoaches = [];
     try {
@@ -72,11 +62,14 @@ class CoachController extends GetxController {
 
       // Lấy totalCount để làm pageSize
       int totalCount = firstResponse.totalCount ?? 0;
+      totalCoaches.value = totalCount;
 
       // Gọi lại API với pageSize là totalCount để lấy toàn bộ học viên
       var coachData = await Api.getAllCoaches(1, totalCount);
 
       allCoaches.addAll(coachData.coaches!);
+
+      allCoaches.sort((a, b) => a.id.compareTo(b.id));
 
       coaches.value = allCoaches; // Cập nhật danh sách học viên
       print('Total coaches loaded: ${coaches.length}');
@@ -91,7 +84,7 @@ class CoachController extends GetxController {
     int pageIndex = index ~/ rowsPerPage;
     int rowIndex = index % rowsPerPage;
     if (pageCheckboxStates.containsKey(pageIndex)) {
-      pageCheckboxStates[pageIndex]?[rowIndex] =
+pageCheckboxStates[pageIndex]?[rowIndex] =
           !(pageCheckboxStates[pageIndex]?[rowIndex] ?? false);
     }
 updateSelectedStudents();
@@ -141,6 +134,8 @@ updateSelectedStudents();
   var _currentPage = 0.obs;
   var _rowsPerPage = 20.obs;
 
+  RxInt selectedRowsPerPage = 10.obs;
+
   int get currentPage => _currentPage.value;
   set currentPage(int page) => _currentPage.value = page;
 
@@ -148,12 +143,12 @@ updateSelectedStudents();
   set rowsPerPage(int rows) => _rowsPerPage.value = rows;
 
   List<Coach> get paginatedCoaches {
-    final startIndex = currentPage * rowsPerPage;
-    final endIndex = (startIndex + rowsPerPage < coaches.length)
-        ? startIndex + rowsPerPage
+    final startIndex = currentPage * selectedRowsPerPage.value;
+    final endIndex = (startIndex + selectedRowsPerPage.value < coaches.length)
+        ? startIndex + selectedRowsPerPage.value
         : coaches.length;
     return coaches.sublist(startIndex, endIndex);
   }
 
-  int get totalPages => (coaches.length / rowsPerPage).ceil();
+  int get totalPages => (coaches.length / selectedRowsPerPage.value).ceil();
 }

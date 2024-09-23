@@ -36,6 +36,8 @@ class CoachDetailController extends GetxController {
     isEdit.value = !isEdit.value;
   }
 
+  RxBool selectedGender = true.obs;
+
   final RxList<String> classSessions = <String>[
     "Ca 1: (8:00 - 10:00)",
     "Ca 2: (10:00 - 12:00)",

@@ -8,6 +8,11 @@ import 'package:iconly/iconly.dart';
 // Đảm bảo đường dẫn đúng
 
 class GenderDropdown extends StatelessWidget {
+  GenderDropdown({this.isEdit = false, required this.value});
+  
+  final bool isEdit;
+  final RxBool value; // Đảm bảo là RxBool
+
   @override
   Widget build(BuildContext context) {
     final AddStudentController controller = Get.find();
@@ -22,16 +27,16 @@ class GenderDropdown extends StatelessWidget {
       }).toList();
 
       return CustomDropdown<bool>(
-        label: 'Giới tính',
+        label: isEdit ? '' : 'Giới tính',
         prefixIcon: Icons.transgender,
         items: items,
-        value: controller.selectedGender.value,
+        value: value.value, // Truyền giá trị của RxBool
         onChanged: (newValue) {
           if (newValue != null) {
-            controller.selectedGender.value = newValue;
+            value.value = newValue; // Cập nhật giá trị của RxBool
           }
         },
-        isRequired: true,
+        isRequired: !isEdit,
       );
     });
   }

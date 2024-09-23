@@ -25,10 +25,8 @@ class CustomDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
-      // validator: isRequired
-      //     ?null
-      //     : (value) => Validation.validateEmtyText(label, value.toString()),
-      // autovalidateMode: AutovalidateMode.always,
+      validator: validator,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       onChanged: onChanged,
       isDense: true,
       isExpanded: true,

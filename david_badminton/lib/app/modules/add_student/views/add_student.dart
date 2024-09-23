@@ -4,6 +4,7 @@ import 'package:david_badminton/app/modules/add_student/views/widget/gender_drop
 import 'package:david_badminton/app/modules/add_student/views/widget/input_field.dart';
 import 'package:david_badminton/app/modules/add_student/views/widget/location_dropdown.dart';
 import 'package:david_badminton/app/modules/add_student/views/widget/shift_dropdown.dart';
+import 'package:david_badminton/app/modules/add_student/views/widget/status_dropdown.dart';
 import 'package:david_badminton/app/modules/home/views/widget/function/human_management.dart';
 import 'package:david_badminton/common/components/text_component.dart';
 import 'package:david_badminton/common/widgets/appbar/appbar_common.dart';
@@ -75,7 +76,7 @@ class _AddStudentState extends State<AddStudent> {
                 ),
                 SizedBox(
                   height: 20.h,
-                ),
+),
                 InputField(
                   controller: controller.stdPhone,
                   fieldName: 'Điện thoại',
@@ -119,7 +120,12 @@ class _AddStudentState extends State<AddStudent> {
                     SizedBox(
                       width: 10.w,
                     ),
-                    Expanded(flex: 2, child: GenderDropdown()),
+                    Expanded(
+                      flex: 2,
+                      child: GenderDropdown(
+                        value: controller.selectedGender,
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(
@@ -151,14 +157,19 @@ class _AddStudentState extends State<AddStudent> {
                   height: 20.h,
                 ),
                 //huấn luyện viên
-                CoachDropdown(),
+                CoachDropdown(
+                  value: controller.selectedCoachId,
+                ),
+
                 SizedBox(
                   height: 20.h,
                 ),
                 //cơ sở
-                LocationDropdown(),
+                LocationDropdown(
+                  value: controller.selectedLocationId,
+                ),
                 SizedBox(
-                  height: 20.h,
+height: 20.h,
                 ),
                 InputField(
                   controller: controller.stdTuition,
@@ -185,17 +196,8 @@ class _AddStudentState extends State<AddStudent> {
                 SizedBox(
                   height: 20.h,
                 ),
-                InputField(
-                  controller: controller.stdStatus,
-                  fieldName: 'Trạng thái',
-                  icon: Icon(
-                    Icons.info,
-                    size: 26.sp,
-                  ),
-                  isDropdown: true,
-                  isCompulsory: true,
-                  options: gender,
-                ),
+                //trạng thái ở đây
+                StatusDropdown(value: controller.selectedStatus),
                 SizedBox(
                   height: 20.h,
                 ),
@@ -255,7 +257,7 @@ class _AddStudentState extends State<AddStudent> {
                           size: 26.sp,
                         ),
                         isDropdown: true,
-                        isCompulsory: true,
+isCompulsory: true,
                         options: gender,
                       ),
                     ),
@@ -351,7 +353,7 @@ class _AddStudentState extends State<AddStudent> {
               color: Colors.white,
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColor.buttonGreen,
+backgroundColor: AppColor.buttonGreen,
               shape: BeveledRectangleBorder(
                 borderRadius: BorderRadius.circular(2),
               ),

@@ -1,10 +1,16 @@
+import 'package:david_badminton/app/modules/add_student/views/widget/coach_dropdown.dart';
+import 'package:david_badminton/app/modules/add_student/views/widget/gender_dropdown.dart';
 import 'package:david_badminton/app/modules/add_student/views/widget/input_field.dart';
+import 'package:david_badminton/app/modules/add_student/views/widget/location_dropdown.dart';
+import 'package:david_badminton/app/modules/add_student/views/widget/shift_dropdown.dart';
+import 'package:david_badminton/app/modules/add_student/views/widget/status_dropdown.dart';
 import 'package:david_badminton/app/modules/student_detail/controller/student_detail_controller.dart';
 import 'package:david_badminton/app/modules/student_detail/views/widget/title_field.dart';
 import 'package:david_badminton/common/components/text_component.dart';
 import 'package:david_badminton/common/widgets/appbar/appbar_common.dart';
 import 'package:david_badminton/utils/constants/app_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
@@ -14,10 +20,84 @@ class StudentDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     StudentDetailController controller = Get.put(StudentDetailController());
+
+    controller.stdName.text = controller.student.name;
+    controller.stdPhoneNumber.text = controller.student.phoneNumber;
+    controller.stdAddress.text = controller.student.address;
+    controller.stdDob.text = formatDate(controller.student.dob);
+    controller.stdGender.text =
+        controller.student.gender.toString() == true ? 'Nam' : 'Nữ';
+
+    controller.stdCoachName.text = controller.student.coachName;
+    controller.selectedGender.value = controller.student.gender;
+    controller.stdLocationName.text = controller.student.locationName;
+    controller.stdShift.text = controller.classSessions[controller.student.shift];
+    controller.stdCreateAt.text = formatDate(controller.student.createdAt);
+    controller.stdHealthStatus.text = controller.student.healthStatus;
+    controller.stdHeight.text = controller.student.height.toString();
+    controller.stdWeight.text = controller.student.weight.toString();
+    controller.stdTuitionFee.text =
+        controller.student.defaultTuitionFee.toString();
+    controller.stdAvatar.text = controller.student.avatar;
+    controller.stdDescription.text = controller.student.description;
+
+    
+
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBarCommon(
-        title: 'Chi tiết',
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Obx(
+          () => AppBarCommon(
+            title: controller.isEdit.value ? 'Chỉnh sửa học viên' : 'Chi tiết',
+            actions: [
+              IconButton(
+                onPressed: () {
+                  controller.toggleEdit();
+                },
+icon: controller.isEdit.value
+                    ? TextComponent(
+                        content: 'Hủy',
+                        color: Colors.white,
+                      )
+                    : Icon(
+                        IconlyLight.edit_square,
+                        size: 30,
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Obx(
+        () {
+          return controller.isEdit.value
+              ? Padding(
+                  padding: EdgeInsets.only(
+                      top: 10, bottom: 10.h, left: 10.w, right: 10.w),
+                  child: SizedBox(
+                    height: 50.h,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Thực hiện hành động lưu ở đây
+                      },
+                      child: TextComponent(
+                        content: 'Lưu',
+                        size: 22.sp,
+                        weight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor.buttonGreen,
+                        shape: BeveledRectangleBorder(
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : SizedBox.shrink(); // Trả về một widget rỗng khi isEdit là false
+        },
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -32,10 +112,25 @@ class StudentDetail extends StatelessWidget {
               foregroundImage: AssetImage('assets/logos/logo.png'),
               radius: 60.sp,
             ),
+            SizedBox(
+              height: 10,
+            ),
+            Obx(
+              () => controller.isEdit.value
+                  ? TextButton(
+                      onPressed: () {},
+                      child: TextComponent(
+                        content: 'Tải ảnh lên',
+                        size: 18.sp,
+                      ),
+                    )
+                  : SizedBox.shrink(),
+            ),
 
             SizedBox(
               height: 20.h,
             ),
+
             TextComponent(
               content: 'Thông tin học viên',
               isTitle: true,
@@ -56,7 +151,7 @@ class StudentDetail extends StatelessWidget {
                 size: 26.sp,
               ),
               isDetail: true,
-            ),
+),
             SizedBox(
               height: 20.h,
             ),
@@ -64,14 +159,16 @@ class StudentDetail extends StatelessWidget {
               title: 'Họ tên: ',
             ),
             //name
-            InputField(
-              controller: controller.stdName,
-              fieldName: controller.student.name,
-              icon: Icon(
-                IconlyBold.profile,
-                size: 26.sp,
+            Obx(
+              () => InputField(
+                controller: controller.stdName,
+                fieldName: '',
+                icon: Icon(
+                  IconlyBold.profile,
+                  size: 26.sp,
+                ),
+                isDetail: controller.isEdit.value ? false : true,
               ),
-              isDetail: true,
             ),
             SizedBox(
               height: 20.h,
@@ -80,14 +177,17 @@ class StudentDetail extends StatelessWidget {
               title: 'Số điện thoại: ',
             ),
             //phone
-            InputField(
-              controller: controller.stdPhoneNumber,
-              fieldName: controller.student.phoneNumber.toString(),
-              icon: Icon(
-                IconlyBold.call,
-                size: 26.sp,
+            Obx(
+              () => InputField(
+                controller: controller.stdPhoneNumber,
+                fieldName: '',
+                icon: Icon(
+                  IconlyBold.call,
+                  size: 26.sp,
+                ),
+                isDetail: controller.isEdit.value ? false : true,
+                inputType: TextInputType.phone,
               ),
-              isDetail: true,
             ),
             SizedBox(
               height: 20.h,
@@ -96,14 +196,16 @@ class StudentDetail extends StatelessWidget {
             TitleField(
               title: 'Địa chỉ: ',
             ),
-            InputField(
-              controller: controller.stdAddress,
-              fieldName: controller.student.address.toString(),
-              icon: Icon(
-                IconlyBold.location,
-                size: 26.sp,
+            Obx(
+              () => InputField(
+                controller: controller.stdAddress,
+                fieldName: '',
+                icon: Icon(
+                  IconlyBold.location,
+                  size: 26.sp,
+                ),
+                isDetail: controller.isEdit.value ? false : true,
               ),
-              isDetail: true,
             ),
             SizedBox(
               height: 20.h,
@@ -120,14 +222,17 @@ class StudentDetail extends StatelessWidget {
                       TitleField(
                         title: 'Ngày sinh: ',
                       ),
-                      InputField(
-                        controller: controller.stdDob,
-                        fieldName: formatDate(controller.student.dob),
-                        icon: Icon(
-                          IconlyBold.calendar,
-                          size: 26.sp,
+                      Obx(
+                        () => InputField(
+                          controller: controller.stdDob,
+                          fieldName: '',
+                          icon: Icon(
+                            IconlyBold.calendar,
+                            size: 26.sp,
+                          ),
+                          isDetail: controller.isEdit.value ? false : true,
+                          isDatePicker: controller.isEdit.value ? true : false,
                         ),
-                        isDetail: true,
                       ),
                     ],
                   ),
@@ -143,18 +248,28 @@ class StudentDetail extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TitleField(
-                        title: 'Giới tính: ',
+title: 'Giới tính: ',
                       ),
-                      InputField(
-                        controller: controller.stdGender,
-                        fieldName:
-                            controller.student.gender == true ? 'Nam' : 'Nữ',
-                        icon: Icon(
-                          Icons.transgender,
-                          size: 26.sp,
-                        ),
-                        isDetail: true,
-                      ),
+                      Obx(() {
+                        if (controller.isEdit.value) {
+                          return GenderDropdown(
+                            isEdit: true,
+                            value: controller.selectedGender,
+                          );
+                        } else {
+                          // When isEdit is false, show the InputField
+                          return InputField(
+                            controller: controller.stdGender,
+                            fieldName: '',
+                            icon: Icon(
+                              Icons.transgender,
+                              size: 26.sp,
+                            ),
+                            isDetail:
+                                true, // isDetail should be true when not in edit mode
+                          );
+                        }
+                      }),
                     ],
                   ),
                 ),
@@ -188,16 +303,29 @@ class StudentDetail extends StatelessWidget {
               height: 20.h,
             ),
             TitleField(
-              title: 'Huấn luyên viên: ',
+              title: 'Huấn luyện viên: ',
             ),
-            InputField(
-              controller: controller.stdCoachName,
-              fieldName: controller.student.coachName.toString(),
-              icon: Icon(
-                IconlyBold.profile,
-                size: 26.sp,
-              ),
-              isDetail: true,
+            Obx(
+              () {
+                if (controller.isEdit.value) {
+                  return CoachDropdown(
+                    isEdit: true,
+                    value: controller.selectedCoachId,
+                  );
+                } else {
+                  // When isEdit is false, show the InputField
+                  return InputField(
+                    controller: controller.stdCoachName,
+                    fieldName: '',
+                    icon: Icon(
+                      Icons.run_circle_outlined,
+                      size: 26.sp,
+                    ),
+                    isDetail:
+                        true, // isDetail should be true when not in edit mode
+                  );
+                }
+              },
             ),
             SizedBox(
               height: 20.h,
@@ -205,14 +333,27 @@ class StudentDetail extends StatelessWidget {
             TitleField(
               title: 'Cơ sở: ',
             ),
-            InputField(
-              controller: controller.stdLocationName,
-              fieldName: controller.student.locationName.toString(),
-              icon: Icon(
-                IconlyBold.location,
-                size: 26.sp,
-              ),
-              isDetail: true,
+            Obx(
+              () {
+                if (controller.isEdit.value) {
+                  return LocationDropdown(
+                    isEdit: true,
+value: controller.selectedLocationId,
+                  );
+                } else {
+                  // When isEdit is false, show the InputField
+                  return InputField(
+                    controller: controller.stdLocationName,
+                    fieldName: '',
+                    icon: Icon(
+                      IconlyBold.location,
+                      size: 26.sp,
+                    ),
+                    isDetail:
+                        true, // isDetail should be true when not in edit mode
+                  );
+                }
+              },
             ),
             SizedBox(
               height: 20.h,
@@ -221,14 +362,26 @@ class StudentDetail extends StatelessWidget {
             TitleField(
               title: 'Ca học: ',
             ),
-            InputField(
-              controller: controller.stdShift,
-              fieldName: controller.getShiftName(controller.student.shift),
-              icon: Icon(
-                Icons.schedule,
-                size: 26.sp,
-              ),
-              isDetail: true,
+            Obx(
+              () {
+                if (controller.isEdit.value) {
+                  return ShiftDropdown(
+                    isEdit: true,
+                  );
+                } else {
+                  // When isEdit is false, show the InputField
+                  return InputField(
+                    controller: controller.stdShift,
+                    fieldName: '',
+                    icon: Icon(
+                      Icons.schedule,
+                      size: 26.sp,
+                    ),
+                    isDetail:
+                        true, // isDetail should be true when not in edit mode
+                  );
+                }
+              },
             ),
             SizedBox(
               height: 20.h,
@@ -236,14 +389,17 @@ class StudentDetail extends StatelessWidget {
             TitleField(
               title: 'Ngày bắt đầu: ',
             ),
-            InputField(
-              controller: controller.stdCreateAt,
-              fieldName: formatDate(controller.student.createdAt),
-              icon: Icon(
-                Icons.calendar_month,
-                size: 26.sp,
+            Obx(
+              () => InputField(
+                controller: controller.stdCreateAt,
+                fieldName: '',
+                icon: Icon(
+                  Icons.calendar_month,
+                  size: 26.sp,
+                ),
+                isDetail: controller.isEdit.value ? false : true,
+                isDatePicker: controller.isEdit.value ? true : false,
               ),
-              isDetail: true,
             ),
             SizedBox(
               height: 20.h,
@@ -251,19 +407,33 @@ class StudentDetail extends StatelessWidget {
             TitleField(
               title: 'Tình trạng: ',
             ),
-            InputField(
-              controller: controller.stdStatus,
-              fieldName: controller.student.status.toString(),
-              icon: Icon(
-                Icons.info,
-                size: 26.sp,
-              ),
-              isDetail: true,
+            Obx(
+              () {
+                if (controller.isEdit.value) {
+                  return StatusDropdown(
+                    isEdit: true,
+                    value: controller.selectedStatus,
+                  );
+                } else {
+                  // When isEdit is false, show the InputField
+                  return InputField(
+                    controller: controller.stdStatus,
+                    fieldName: '',
+                    icon: Icon(
+                      Icons.info,
+                      size: 26.sp,
+                    ),
+                    isDetail:
+                        true, // isDetail should be true when not in edit mode
+                  );
+                }
+              },
             ),
+
             SizedBox(
               height: 20.h,
             ),
-            TextComponent(
+TextComponent(
               content: 'Thông tin khác',
               isTitle: true,
               color: AppColor.primaryOrange,
@@ -274,14 +444,16 @@ class StudentDetail extends StatelessWidget {
             TitleField(
               title: 'Tình trạng sức khỏe: ',
             ),
-            InputField(
-              controller: controller.stdHealthStatus,
-              fieldName: controller.student.healthStatus.toString(),
-              icon: Icon(
-                Icons.health_and_safety,
-                size: 26.sp,
+            Obx(
+              () => InputField(
+                controller: controller.stdHealthStatus,
+                fieldName: '',
+                icon: Icon(
+                  Icons.health_and_safety,
+                  size: 26.sp,
+                ),
+                isDetail: controller.isEdit.value ? false : true,
               ),
-              isDetail: true,
             ),
             SizedBox(
               height: 20.h,
@@ -298,14 +470,17 @@ class StudentDetail extends StatelessWidget {
                       TitleField(
                         title: 'Chiều cao: ',
                       ),
-                      InputField(
-                        controller: controller.stdHeight,
-                        fieldName: controller.student.height.toString(),
-                        icon: Icon(
-                          Icons.straighten,
-                          size: 26.sp,
+                      Obx(
+                        () => InputField(
+                          controller: controller.stdHeight,
+                          fieldName: '',
+                          icon: Icon(
+                            Icons.straighten,
+                            size: 26.sp,
+                          ),
+                          isDetail: controller.isEdit.value ? false : true,
+                          inputType: TextInputType.number,
                         ),
-                        isDetail: true,
                       ),
                     ],
                   ),
@@ -321,14 +496,17 @@ class StudentDetail extends StatelessWidget {
                       TitleField(
                         title: 'Cân nặng: ',
                       ),
-                      InputField(
-                        controller: controller.stdWeight,
-                        fieldName: controller.student.weight.toString(),
-                        icon: Icon(
-                          Icons.fitness_center,
-                          size: 26.sp,
+                      Obx(
+                        () => InputField(
+                          controller: controller.stdWeight,
+                          fieldName: '',
+                          icon: Icon(
+                            Icons.fitness_center,
+                            size: 26.sp,
+                          ),
+                          isDetail: controller.isEdit.value ? false : true,
+                          inputType: TextInputType.number,
                         ),
-                        isDetail: true,
                       ),
                     ],
                   ),
@@ -346,17 +524,19 @@ class StudentDetail extends StatelessWidget {
             SizedBox(
               height: 10.h,
             ),
-            TitleField(
+TitleField(
               title: 'Tên người giám hộ: ',
             ),
-            InputField(
-              controller: controller.stdGuardianName,
-              fieldName: 'Tên người giám hộ',
-              icon: Icon(
-                IconlyBold.profile,
-                size: 26.sp,
+            Obx(
+              () => InputField(
+                controller: controller.stdGuardianName,
+                fieldName: '',
+                icon: Icon(
+                  IconlyBold.profile,
+                  size: 26.sp,
+                ),
+                isDetail: controller.isEdit.value ? false : true,
               ),
-              isDetail: true,
             ),
             SizedBox(
               height: 20.h,
@@ -372,14 +552,16 @@ class StudentDetail extends StatelessWidget {
                       TitleField(
                         title: 'Quan hệ: ',
                       ),
-                      InputField(
-                        controller: controller.stdGuardianRelation,
-                        fieldName: 'Quan hệ',
-                        icon: Icon(
-                          Icons.family_restroom,
-                          size: 26.sp,
+                      Obx(
+                        () => InputField(
+                          controller: controller.stdGuardianRelation,
+                          fieldName: '',
+                          icon: Icon(
+                            Icons.family_restroom,
+                            size: 26.sp,
+                          ),
+                          isDetail: controller.isEdit.value ? false : true,
                         ),
-                        isDetail: true,
                       ),
                     ],
                   ),
@@ -395,15 +577,26 @@ class StudentDetail extends StatelessWidget {
                       TitleField(
                         title: 'Giới tính: ',
                       ),
-                      InputField(
-                        controller: controller.stdGuardianGender,
-                        fieldName: 'Giới tính',
-                        icon: Icon(
-                          Icons.transgender,
-                          size: 26.sp,
-                        ),
-                        isDetail: true,
-                      ),
+                      Obx(() {
+                        if (controller.isEdit.value) {
+                          return GenderDropdown(
+                            isEdit: true,
+                            value: controller.selectedGuardianGender,
+                          );
+                        } else {
+                          // When isEdit is false, show the InputField
+                          return InputField(
+                            controller: controller.stdGender,
+                            fieldName: '',
+                            icon: Icon(
+                              Icons.transgender,
+                              size: 26.sp,
+                            ),
+                            isDetail:
+                                true, // isDetail should be true when not in edit mode
+                          );
+                        }
+                      }),
                     ],
                   ),
                 ),
@@ -415,14 +608,17 @@ class StudentDetail extends StatelessWidget {
             TitleField(
               title: 'Số điện thoại: ',
             ),
-            InputField(
-              controller: controller.stdGuardianPhone,
-              fieldName: 'Điện thoại',
-              icon: Icon(
-                IconlyBold.call,
-                size: 26.sp,
+            Obx(
+() => InputField(
+                controller: controller.stdGuardianPhone,
+                fieldName: '',
+                icon: Icon(
+                  IconlyBold.call,
+                  size: 26.sp,
+                ),
+                isDetail: controller.isEdit.value ? false : true,
+                inputType: TextInputType.phone,
               ),
-              isDetail: true,
             ),
             SizedBox(
               height: 20.h,
@@ -430,14 +626,16 @@ class StudentDetail extends StatelessWidget {
             TitleField(
               title: 'Ghi chú: ',
             ),
-            InputField(
-              controller: controller.stdGuardianNote,
-              fieldName: 'Ghi chú',
-              icon: Icon(
-                Icons.comment,
-                size: 26.sp,
+            Obx(
+              () => InputField(
+                controller: controller.stdGuardianNote,
+                fieldName: '',
+                icon: Icon(
+                  Icons.comment,
+                  size: 26.sp,
+                ),
+                isDetail: controller.isEdit.value ? false : true,
               ),
-              isDetail: true,
             ),
             SizedBox(height: 18.h),
             // Column(

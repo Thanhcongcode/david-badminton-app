@@ -43,11 +43,11 @@ class FunctionButton extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),
               textAlign: TextAlign.center,
-              maxLines: 2, // Giới hạn số dòng
+              maxLines: 3, // Giới hạn số dòng
               overflow: TextOverflow.ellipsis,
               softWrap: true,
             ),

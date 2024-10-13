@@ -28,7 +28,7 @@ class HumanManagement extends StatelessWidget {
           ),
           FunctionButton(
             icon: 'assets/icons/coach.svg',
-            label: 'Quản lý Huấn luyện viên',
+            label: 'Quản lý huấn luyện viên',
             onPressed: () {
               Get.to(() => CoachView());
             },

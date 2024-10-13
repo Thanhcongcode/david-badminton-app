@@ -11,20 +11,21 @@ class PrimaryHeaderContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    
-    // Tính chiều cao tự động dựa trên kích thước của nội dung
-    final headerHeight = child != null
-        ? child is SizedBox
-            ? (child as SizedBox).height ?? 0
-            : height * 0.25 // giá trị mặc định nếu không có chiều cao cụ thể
-        : height * 0.25;
+    // final height = MediaQuery.of(context).size.height;
+
+    // // Tính chiều cao tự động dựa trên kích thước của nội dung
+    // final headerHeight = child != null
+    //     ? child is SizedBox
+    //         ? (child as SizedBox).height ?? 0
+    //         : height * 0.25 // giá trị mặc định nếu không có chiều cao cụ thể
+    //     : height * 0.25;
 
     return CurvedEdgeWidget(
       child: Container(
         color: AppColor.secondaryBlue,
         padding: EdgeInsets.all(0),
-        child: Stack(               //có sizebox bao cái stack height = headerheight
+        child: Stack(
+          //có sizebox bao cái stack height = headerheight
           children: [
             Positioned(
               top: -75.h,

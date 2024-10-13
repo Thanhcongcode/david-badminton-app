@@ -68,4 +68,9 @@ class AppColor {
     Color(0xff4078bc),
     Color.fromARGB(255, 217, 216, 227),
   ], begin: Alignment.centerLeft, end: Alignment.centerRight);
+
+  static LinearGradient customLineGradientLine = const LinearGradient(colors: [
+    Color.fromARGB(255, 170, 185, 251),
+    Color(0xfff4f8fb),
+  ], begin: Alignment.topCenter, end: Alignment.bottomCenter);
 }

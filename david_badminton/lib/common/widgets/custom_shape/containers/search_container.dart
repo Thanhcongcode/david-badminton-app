@@ -23,7 +23,7 @@ class SearchContainer extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: Colors.grey,
           ),

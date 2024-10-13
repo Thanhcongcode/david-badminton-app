@@ -71,7 +71,7 @@ class HomeScreen extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(left: 24.w),
                       child: SectionHeading(
-                        title: 'Quản lý nhân sự',
+                        title: 'QUẢN LÝ NHÂN SỰ',
                       ),
                     ),
                     SizedBox(height: 16.h),
@@ -83,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                     // Phần cơ sở
                     Padding(
                       padding: EdgeInsets.only(left: 24.w),
-                      child: SectionHeading(title: 'Cơ sở'),
+                      child: SectionHeading(title: 'CƠ SỞ'),
                     ),
                     SizedBox(height: 16.h),
                     BranchManagement(),
@@ -91,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                     SizedBox(height: 24.h),
                     Padding(
                       padding: EdgeInsets.only(left: 24.w),
-                      child: SectionHeading(title: 'Học phí'),
+                      child: SectionHeading(title: 'HỌC PHÍ'),
                     ),
                     SizedBox(height: 16.h),
                     TuitionFee(),
